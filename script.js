@@ -396,7 +396,7 @@ function levelUp() {
       update(locations[8]);
       innerButton1.innerText = "Strength: " + strength + " -> " + (strength + 10);
       innerButton2.innerText = "Defense: " + def + " -> " + (def + 15);
-      innerButton3.innerText = 
+      innerButton3.innerText = "CHANGE THIS";
    }
    else {
       text.innerText = "You don't have the XP for that!";
