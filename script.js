@@ -84,9 +84,9 @@ levelText.innerText = levelCost;
 const weapons = [
    { name: 'stick', power: 5 },
    { name: 'dagger', power: 8 },
-   { name: 'mace', power: 14 },
-   { name: 'sword', power: 20 },
-   { name: 'greatsword', power: 30 }
+   { name: 'mace', power: 12 },
+   { name: 'sword', power: 18 },
+   { name: 'greatsword', power: 25 }
 ];
 
 // MONSTERS
@@ -112,7 +112,7 @@ const monsters = [
       // 2
       name: "Large Tusked Boar",
       level: 5,
-      health: 50,
+      health: 90,
       difficulty: "First Boss"
    },
    {
@@ -128,71 +128,71 @@ const monsters = [
       // 4
       name: "Flower Mimic",
       level: 4,
-      health: 60,
+      health: 85,
       difficulty: "Easy"
    },
    {
       // Special Monster
       // 5
       name: "Massive Slime",
-      level: 1,
-      health: 750,
+      level: Math.floor(playerLevel/2),
+      health: Math.floor(health*7.5),
       difficulty: "Special"
    },
    {
       // floor 2
       // 6
       name: "Small Stone Golem",
-      level: 5,
-      health: 80,
+      level: 6,
+      health: 200,
       difficulty: "Medium"
    },
    {
       // floor 2 boss
       // 7
       name: "Massive Bearded Dragon",
-      level: 8,
-      health: 150,
+      level: 10,
+      health: 340,
       difficulty: "Second Boss"
    },
    {
       // floor 2
       // 8
       name: "Insane Adventurer",
-      level: 7,
-      health: 110,
+      level: 8,
+      health: 175,
       difficulty: "Hard"
    },
    {
       // floor 3
       // 9
       name: "Fire Elemental",
-      level: 8,
-      health: 200,
+      level: 11,
+      health: 280,
       difficulty: "Easy"
    },
    {
       // floor 3
       // 10
       name: "Large Stone Golem",
-      level: 10,
-      health: 350,
+      level: 13,
+      health: 500,
       difficulty: "Medium"
    },
    {
       // floor 3
       // 11
       name: "Lava Lizard",
-      level: 11,
-      health: 245,
+      level: 15,
+      health: 350,
       difficulty: "Hard"
    },
    {
       // floor 3 boss
       // 12
       name: "Red Dragon",
-      level: 14,
-      health: 750,
+      level: 20,
+      health: 1000,
       difficulty: "FINAL BOSS"
    }
 ]
@@ -217,20 +217,20 @@ const locations = [
       name: "Dungeon",
       "button text": ["Fight monster", "Go deeper in", "Go to town square"],
       "button functions": [monsterSearch, goDeeper, goTown],
-      text: "You enter the first floor of the dungeon, it's rough stone architecture is worn and mossy. It's crawling with monsters..."
+      text: "Your in the first floor of the dungeon, it's rough stone architecture is worn and mossy. It's crawling with monsters..."
    },
    {
       // 3
       name: "fight",
       "button text": ["Attack", "Charge up", "Run"],
-      "button functions": [attack, chargeAttack, goTown],
+      "button functions": [attack, chargeAttack, goFloor],
       text: "You approach the nearest monster."
    },
    {
       // 4
       name: "kill monster",
-      "button text": ["Go to town square", "Go to town square", "Go to town square"],
-      "button functions": [goTown, goTown, easterEgg],
+      "button text": ["Go to town square", "Continue inside the Dungeon", "Go to town square"],
+      "button functions": [goTown, goFloor, goTown],
       text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
    },
    {
@@ -270,13 +270,14 @@ const locations = [
    },
    {
       // 10
-      name: "Dungeon",
+      name: "Final Floor",
       "button text": ["Fight monster", "Fight final boss", "Go to town square"],
       "button functions": [monsterSearch, goDeeper, goTown],
       text: "You enter the first floor of the dungeon, it's rough stone architecture is worn and mossy. It's crawling with monsters..."
    }
 ];
 
+update(locations[0]);
 // initialize buttons
 button1.onclick = goStore;
 button2.onclick = goDung;
@@ -300,6 +301,8 @@ function update(location) {
    button2.onclick = location["button functions"][1];
    button3.onclick = location["button functions"][2];
    text.innerHTML = location.text;
+   button1.style.display = "inline";
+   button2.style.display = "inline";
    button3.style.display = "inline";
 }
 
@@ -321,8 +324,19 @@ function goStore() {
 }
 
 function goDung() {
+   fightingBoss = false;
    floor = 1;
    update(locations[2]);
+}
+
+function goFloor() {
+   fightingBoss = false;
+   update(locations[2]);
+   if (floor == 2) {
+      text.innerText = "You've reached the second floor. The atmosphere is hot, The stones making up this floor are toasty and scald your boots. The monsters here are much more powerful!";
+   } else if (floor == 3){
+      update(locations[10]);
+   }
 }
 
 function specialStore() {
@@ -376,6 +390,9 @@ function sellWeapon() {
 
 function levelUp() {
    if (xp >= levelCost) {
+      button1.style.display = "none";
+      button2.style.display = "none";
+      button3.style.display = "none";
       innerButtons.style.display = "block";
       xp -= levelCost;
       levelCost = Math.floor(levelCost * 1.2);
@@ -384,7 +401,7 @@ function levelUp() {
       levelingText.innerText = "Level: " + playerLevel;
       levelText.innerText = levelCost;
       strength += 7;
-      def += 7;
+      def += 5;
       if (dodgeChance > .25) {
          innerButton5.style.display = "none";
       } else {
@@ -396,7 +413,16 @@ function levelUp() {
       update(locations[8]);
       innerButton1.innerText = "Strength: " + strength + " -> " + (strength + 10);
       innerButton2.innerText = "Defense: " + def + " -> " + (def + 15);
-      innerButton3.innerText = "CHANGE THIS";
+      innerButton3.innerText = "Critical damage: " + Math.floor(critDmg + 100) + "% -> ";
+      if (critChance < 1)
+      {
+         innerButton3.innerText += Math.floor(critDmg + 100 + 25) + "% + Critical chance: " + Math.floor(critChance*100) + "% -> " + Math.floor(critChance*100 + 5) + "%";
+      } else {
+         innerButton3.innerText += Math.floor(critDmg + 50) + "%";
+      }
+      innerButton4.innerText = "Accuracy: " + Math.floor(accuracy*100) + "% -> " + Math.floor(accuracy*100 + 5) + "%";
+      innerButton5.innerText = "Dodge chance: " + Math.floor(dodgeChance*100) + "% -> " + Math.floor(dodgeChance*100 + 5) + "%";
+      innerButton6.innerText = "Charge Attack: X" + chargeDmg + " -> X" + (chargeDmg + .5);
    }
    else {
       text.innerText = "You don't have the XP for that!";
@@ -554,9 +580,11 @@ function attack() {
    }
    healthText.innerText = health;
    monsterHealthText.innerText = monsterHealth;
-   if (health <= 0) {
+   if (health <= 0)
+   {
       lose();
-   } else if (monsterHealth <= 0) {
+   } else if (monsterHealth <= 0)
+   {
       defeatMonster();
    }
 }
@@ -580,7 +608,7 @@ function rollAtt() {
 }
 
 function getMonsterAttackValue(level) {
-   monDmg = (level * 10 - def / 10) * (1 - def / (def + 600));
+   monDmg = (level * 10 - def / 10) * (1 - def / (def + 300));
    rollAtt();
    dmgRan += .1;
    monDmg = Math.floor(monDmg * dmgRan);
@@ -623,8 +651,10 @@ function defeatMonster() {
    } else { xp += 2; }
    if (bossOne && fightingBoss) {
       bossOne = false;
+      update(locations[4]);
    } else if (bossTwo && fightingBoss) {
       bossTwo = false;
+      update(locations[4]);
    } else if (finalBoss && fightingBoss) {
       winGame();
    } else { update(locations[4]); }
@@ -632,6 +662,7 @@ function defeatMonster() {
    goldText.innerText = gold;
    xpText.innerText = xp;
    healthText.innerText = health;
+   button3.style.display = "none";
 }
 
 function lose() {
@@ -672,6 +703,7 @@ function restart() {
    xpText.innerText = xp;
    goldText.innerText = gold;
    levelText.innerText = levelCost;
+   levelingText.innerText = playerLevel;
    goTown();
 }
 
