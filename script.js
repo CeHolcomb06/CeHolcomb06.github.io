@@ -194,6 +194,14 @@ const monsters = [
       level: 20,
       health: 1000,
       difficulty: "FINAL BOSS"
+   },
+   {
+      // Phantom
+      // 13
+      name: "The Ghost of Red Dragon",
+      level: 30,
+      health: 2500,
+      difficulty: "Good Luck"
    }
 ]
 // LOCATIONS
@@ -208,7 +216,7 @@ const locations = [
    {
       // 1
       name: "store",
-      "button text": ["Buy 20 health (10 gold)", "Buy weapon (" + price + " gold)", "Go to town square"],
+      "button text": ["Buy a meal (20 health, 10 gold)", "Buy weapon (" + price + " gold)", "Go to town square"],
       "button functions": [buyHealth, buyWeapon, goTown],
       text: "You enter the store."
    },
@@ -243,8 +251,8 @@ const locations = [
    {
       // 6
       name: "win",
-      "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
-      "button functions": [restart, restart, restart],
+      "button text": ["REPLAY?", "CONTINUE?", "REPLAY?"],
+      "button functions": [restart, goTown, restart],
       text: "You've defeated the Red Dragon! The town can live with a little more peace now, all thanks to you!' &#x1F389;"
    },
    {
@@ -336,6 +344,9 @@ function goFloor() {
       text.innerText = "You've reached the second floor. The atmosphere is hot, The stones making up this floor are toasty and scald your boots. The monsters here are much more powerful!";
    } else if (floor == 3){
       update(locations[10]);
+   } else if (!finalBoss && fightingBoss)
+   {
+      text.innerText = "The phantom follows you... There is no escape from your past";
    }
 }
 
@@ -422,7 +433,7 @@ function levelUp() {
       }
       innerButton4.innerText = "Accuracy: " + Math.floor(accuracy*100) + "% -> " + Math.floor(accuracy*100 + 5) + "%";
       innerButton5.innerText = "Dodge chance: " + Math.floor(dodgeChance*100) + "% -> " + Math.floor(dodgeChance*100 + 5) + "%";
-      innerButton6.innerText = "Charge Attack: X" + chargeDmg + " -> X" + (chargeDmg + .5);
+      innerButton6.innerText = "Charge Attack: X" + chargeDmg + " -> X" + (chargeDmg + .25);
    }
    else {
       text.innerText = "You don't have the XP for that!";
@@ -465,7 +476,7 @@ function dodgeBuff() {
 }
 
 function chargeBuff() {
-   chargeDmg += .5;
+   chargeDmg += .25;
    innerButtons.style.display = "none";
    goTown();
 }
@@ -512,6 +523,10 @@ function goDeeper() {
       fightingBoss = true;
       fighting = 12;
       goFight();
+   } else if(!finalBoss && floor == 3) {
+      fightingBoss = true;
+      fighting = 13;
+      goFight();
    } else if (floor == 1) {
       floor++;
       text.innerText = "You've reached the second floor. The atmosphere is hot, The stones making up this floor are toasty and scald your boots. The monsters here are much more powerful!";
@@ -537,6 +552,10 @@ function attack() {
       text.innerText = "A " + monsters[fighting].name + " is blocking the way!";
       if (!bossOne && !bossTwo) {
          text.innerText = "The final fight... The Red Dragon approaches!";
+      }
+      if (!finalBoss)
+      {
+         text.innerText = "A phantom haunts you, more powerful than before...";
       }
    } else if (fighting == 5) {
       text.innerText = "A special Slime has appeared!!";
@@ -655,7 +674,7 @@ function defeatMonster() {
    } else if (bossTwo && fightingBoss) {
       bossTwo = false;
       update(locations[4]);
-   } else if (finalBoss && fightingBoss) {
+   } else if (fightingBoss) {
       winGame();
    } else { update(locations[4]); }
    fightingBoss = false;
@@ -671,6 +690,12 @@ function lose() {
 
 function winGame() {
    update(locations[6]);
+   if (finalBoss)
+   {
+      finalBoss = false;
+   } else {
+      text.innerText = "You've defeated the phantom, but it will return... You can't run forever...";
+   }
 }
 
 function restart() {
@@ -703,7 +728,7 @@ function restart() {
    xpText.innerText = xp;
    goldText.innerText = gold;
    levelText.innerText = levelCost;
-   levelingText.innerText = playerLevel;
+   levelingText.innerText = "Level: " + playerLevel;
    goTown();
 }
 
