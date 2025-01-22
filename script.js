@@ -11,13 +11,12 @@ let strength = 0;
 let def = 0;
 let critDmg = 100;
 let critChance = 0.1;
-let chargeDmg = 1.5;
+let counterDmg = 1;
 let monMod = 1;
 let goldMult = 1;
 let dodgeChance = 0.1;
 let accuracy = 0.8;
 let floor = 1;
-let charged = false;
 let bossOne = true;
 let bossTwo = true;
 let finalBoss = true;
@@ -230,8 +229,8 @@ const locations = [
    {
       // 3
       name: "fight",
-      "button text": ["Attack", "Charge up", "Run"],
-      "button functions": [attack, chargeAttack, goFloor],
+      "button text": ["Attack", "Counterattack", "Run"],
+      "button functions": [attack, counterAttack, goFloor],
       text: "You approach the nearest monster."
    },
    {
@@ -298,7 +297,7 @@ innerButton2.onclick = defenseBuff;
 innerButton3.onclick = critBuff;
 innerButton4.onclick = accBuff;
 innerButton5.onclick = dodgeBuff;
-innerButton6.onclick = chargeBuff;
+innerButton6.onclick = counterBuff;
 
 function update(location) {
    monsterStats.style.display = "none";
@@ -433,7 +432,7 @@ function levelUp() {
       }
       innerButton4.innerText = "Accuracy: " + Math.floor(accuracy*100) + "% -> " + Math.floor(accuracy*100 + 5) + "%";
       innerButton5.innerText = "Dodge chance: " + Math.floor(dodgeChance*100) + "% -> " + Math.floor(dodgeChance*100 + 5) + "%";
-      innerButton6.innerText = "Charge Attack: X" + chargeDmg + " -> X" + (chargeDmg + .25);
+      innerButton6.innerText = "Counter Attack: X" + counterDmg + " -> X" + (counterDmg + .2);
    }
    else {
       text.innerText = "You don't have the XP for that!";
@@ -475,8 +474,8 @@ function dodgeBuff() {
    goTown();
 }
 
-function chargeBuff() {
-   chargeDmg += .25;
+function counterBuff() {
+   counterDmg += .2;
    innerButtons.style.display = "none";
    goTown();
 }
@@ -544,7 +543,6 @@ function goFight() {
    monsterName.innerText = monsters[fighting].name;
    monsterHealthText.innerText = monsterHealth;
    monsterDifText.innerText = monsters[fighting].difficulty;
-   charged = false;
 }
 
 function attack() {
@@ -575,16 +573,8 @@ function attack() {
    if (isMonsterHit()) {
       attDmg = weapons[currentWeapon].power * (1 + strength / 20);
       console.log("Base player: " + attDmg);
-      if (charged) {
-         if (isCrit()) {
-            attDmg *= (1 + critDmg / 100);
-         }
-         attDmg *= chargeDmg;
-         charged = false;
-      } else {
-         if (isCrit()) {
-            attDmg *= (1 + critDmg / 100);
-         }
+      if (isCrit()) {
+         attDmg *= (1 + critDmg / 100);
       }
       rollAtt();
       dmgRan += .1;
@@ -595,7 +585,6 @@ function attack() {
    } else {
       text.innerText += " You miss.";
       console.log("Player miss. ");
-      charged = false;
    }
    healthText.innerText = health;
    monsterHealthText.innerText = monsterHealth;
@@ -645,18 +634,33 @@ function isPlayerHit() {
    return Math.random() > dodgeChance;
 }
 
-function chargeAttack() {
-   text.innerText = "You charge up your next attack. ";
-   charged = true;
-   text.innerText = "The " + monsters[fighting].name + " attacks.";
-   if (isPlayerHit()) {
+function counterAttack() {
+   text.innerText = "You attempt to counter the " + monsters[fighting].name + "'s attack.";
+   if (Math.random() > .7)
+   {
+      text.innerText += " You successfully counter it!";
       getMonsterAttackValue(monsters[fighting].level);
-      health -= monDmg;
+      monDmg = Math.floor(monDmg/3);
+      //
+      attDmg = Math.floor(monDmg*counterDmg);
+      attDmg = Math.floor(attDmg*(weapons[currentWeapon].power / 3));
+      health -= Math.floor(monDmg);
       healthText.innerText = health;
-      text.innerText += " It did " + monDmg + " damage to you.";
+      //
+      monsterHealth -= attDmg;
+      monsterHealthText.innerText = monsterHealth;
+      text.innerText += " You deal " + attDmg + " damage to it and take " + Math.floor(monDmg) + " damage back.";
    } else {
-      text.innerText += " You dodged it's attack!";
-      console.log("Monster miss. ");
+      text.innerText += "You fail to counter the attack!"
+         getMonsterAttackValue(monsters[fighting].level);
+         health -= monDmg;
+         healthText.innerText = health;
+         text.innerText += " It did " + monDmg + " damage to you.";
+   }
+   if (health <= 0) {
+      lose();
+   } else if (monsterHealth <= 0) {
+      defeatMonster();
    }
 }
 
@@ -711,12 +715,11 @@ function restart() {
    def = 0;
    critDmg = 100;
    critChance = 0.1;
-   chargeDmg = 1.5;
+   counterDmg = 1.5;
    monMod = 1;
    goldMult = 1;
    dodgeChance = 0.1;
    accuracy = 0.8;
-   charged = false;
    floor = 1;
    bossOne = true;
    bossTwo = true;
