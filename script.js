@@ -33,6 +33,7 @@ let monDmg;
 let dmgRan;
 let attDmg;
 let whatItem;
+let monReflectDmg;
 /*                                    Other Notes:
 Level Bonuses:
 Crit damage increase
@@ -339,15 +340,7 @@ function update(location) {
 }
 
 function viewPlayerStats() {
-   strStat.innerText = strength;
-   defStat.innerText = def;
-   critCStat.innerText = critChance*100 + "%";
-   critDStat.innerText = critDmg+100 + "%";
-   accStat.innerText = accuracy*100 + "%";
-   dodgeStat.innerText = dodgeChance*100 + "%";
-   counterCStat.innerText = counterChance*100 + "%";
-   counterDStat.innerText = "X" + counterDmg;
-
+   updatePlayerStats();
    statList.style.display = "block";
    statButton.onclick = closePlayerStats;
 }
@@ -355,6 +348,21 @@ function viewPlayerStats() {
 function closePlayerStats() {
    statList.style.display = "none";
    statButton.onclick = viewPlayerStats;
+}
+
+function updatePlayerStats() {
+   strStat.innerText = strength;
+   defStat.innerText = def;
+   critCStat.innerText = Math.floor(critChance*100) + "%";
+   critDStat.innerText = critDmg+100 + "%";
+   if (accuracy > 1) {
+      accStat.innerText = "100%";
+   } else {
+      accStat.innerText = Math.floor(accuracy*100) + "%";
+   }
+   dodgeStat.innerText = Math.floor(dodgeChance*100) + "%";
+   counterCStat.innerText = Math.floor(counterChance*100) + "%";
+   counterDStat.innerText = "X" + counterDmg;
 }
 
 function goTown() {
@@ -365,6 +373,7 @@ function goTown() {
       button3.style.display = "inline";
       text.innerText += " You can also see a more hidden building that says store on it but in a fancier font.";
    } else { button3.style.display = "none"; }
+   updatePlayerStats();
 }
 
 function goStore() {
@@ -510,6 +519,7 @@ function levelUp() {
       } else { innerButton4.style.display = "none";}
       innerButton5.innerText = "Dodge chance: " + Math.floor(dodgeChance*100) + "% -> " + Math.floor(dodgeChance*100 + 5) + "%";
       innerButton6.innerText = "Counter Attack: X" + counterDmg + " -> X" + (counterDmg + .2 + Math.floor(prestige/10));
+      updatePlayerStats();
    }
    else {
       text.innerText = "You don't have the XP for that!";
@@ -696,9 +706,11 @@ function rollAtt() {
 
 function getMonsterAttackValue(level) {
    monDmg = (Math.floor(Math.pow(level, 1+(prestige/10))) * 10 - def / 10) * (1 - def / (def + 300));
+   monReflectDmg = Math.floor(Math.pow(level, 1+(prestige/10))) * 10;
    rollAtt();
    dmgRan += .1;
    monDmg = Math.floor(monDmg * dmgRan);
+   monReflectDmg = Math.floor(monReflectDmg * dmgRan);
    console.log("Monster Attack: " + monDmg);
    if (monDmg < 0) {
       monDmg = 0;
@@ -719,22 +731,20 @@ function counterAttack() {
    {
       text.innerText += " You successfully counter it!";
       getMonsterAttackValue(monsters[fighting].level);
-      monDmg = Math.floor(monDmg/3);
-      //
-      attDmg = Math.floor(monDmg*counterDmg);
+      monReflectDmg = Math.floor(monReflectDmg/3);
+      attDmg = Math.floor(monReflectDmg*counterDmg);
       attDmg = Math.floor(attDmg*(weapons[currentWeapon].power / 3));
-      health -= Math.floor(monDmg);
+      health -= Math.floor(monDmg/3);
       healthText.innerText = health;
-      //
       monsterHealth -= attDmg;
       monsterHealthText.innerText = monsterHealth;
-      text.innerText += " You deal " + attDmg + " damage to it and take " + Math.floor(monDmg) + " damage back.";
+      text.innerText += " You deal " + attDmg + " damage to it and take " + Math.floor(monDmg/3) + " damage back.";
    } else {
       text.innerText += "You fail to counter the attack!"
          getMonsterAttackValue(monsters[fighting].level);
-         health -= monDmg;
+         health -= Math.floor(monDmg/2);
          healthText.innerText = health;
-         text.innerText += " It did " + monDmg + " damage to you.";
+         text.innerText += " It did " + Math.floor(monDmg/2) + " damage to you.";
    }
    if (health <= 0) {
       lose();
