@@ -13,12 +13,14 @@
        <span class="stat">Gold: <strong><span id="goldText">50</span></strong></span>
        <span class="stat">level Cost: <strong><span id="levelText">10</span></strong></span>
        <span class="stat" id="levelingText">Level: <strong>1</strong></span>
+       <span class="stat" id="prestige">Prestige: <strong>0</strong></span>
      </div>
      <div id="controls">
        <button id="button1">Go to store</button>
        <button id="button2">Go to cave</button>
        <button id="button3">go to special store</button>
        <button id="button4">Level up</button>
+       <button id="statShow">Show Stats</button>
      </div>
      <div id="monsterStats">
        <span class="stat">Monster Name: <strong><span id="monsterName"></span></strong></span>
@@ -35,6 +37,18 @@
      </div>
      <div id="text">
        Welcome to Dungeon Defeater! The town has been experiencing monster attacks leaking out of the dungeon. The town's defenses are crumbling! Go in and take the fight to the source of the trouble!
+     </div>
+     <div id="statList">
+      <ul>
+      <li class="viewableStats"><strong>Strength: <span id="strengthStat">0</span></strong></li>
+      <li class="viewableStats"><strong>Defense: <span id="defenseStat">0</span></strong></li>
+      <li class="viewableStats"><strong>Critical Chance: <span id="critChanceStat">0</span></strong></li>
+      <li class="viewableStats"><strong>Critical Damage: <span id="critDamageStat">0</span></strong></li>
+      <li class="viewableStats"><strong>Accuracy: <span id="accuracyStat">0</span></strong></li>
+      <li class="viewableStats"><strong>Dodge Chance: <span id="dodgeStat">0</span></strong></li>
+      <li class="viewableStats"><strong>Counter Attack Chance: <span id="counterChanceStat">0</span></strong></li>
+      <li class="viewableStats"><strong>Counter Attack Damage: <span id="counterDamageStat">0</span></strong></li>
+      </ul>
      </div>
    </div>
    <script src="./script.js"></script>
