@@ -6,7 +6,7 @@
    <title>RPG - Dungeon Defeater</title>
  </head>
  <body>
-   <div id="game">
+   <div id="mainGame">
      <div id="stats">
        <span class="stat">XP: <strong><span id="xpText">0</span></strong></span>
        <span class="stat">Health: <strong><span id="healthText">100</span></strong></span>
@@ -21,6 +21,7 @@
        <button id="button3">go to special store</button>
        <button id="button4">Level up</button>
        <button id="statShow">Show Stats</button>
+       <button id="itemShow">Show Items</button>
      </div>
      <div id="monsterStats">
        <span class="stat">Monster Name: <strong><span id="monsterName"></span></strong></span>
@@ -40,16 +41,25 @@
      </div>
      <div id="statList">
       <ul>
-      <li class="viewableStats"><strong>Strength: <span id="strengthStat">0</span></strong></li>
-      <li class="viewableStats"><strong>Defense: <span id="defenseStat">0</span></strong></li>
-      <li class="viewableStats"><strong>Critical Chance: <span id="critChanceStat">0</span></strong></li>
-      <li class="viewableStats"><strong>Critical Damage: <span id="critDamageStat">0</span></strong></li>
-      <li class="viewableStats"><strong>Accuracy: <span id="accuracyStat">0</span></strong></li>
-      <li class="viewableStats"><strong>Dodge Chance: <span id="dodgeStat">0</span></strong></li>
-      <li class="viewableStats"><strong>Counter Attack Chance: <span id="counterChanceStat">0</span></strong></li>
-      <li class="viewableStats"><strong>Counter Attack Damage: <span id="counterDamageStat">0</span></strong></li>
+      <li><strong>Strength: <span id="strengthStat">0</span></strong></li>
+      <li><strong>Defense: <span id="defenseStat">0</span></strong></li>
+      <li><strong>Critical Chance: <span id="critChanceStat">0</span></strong></li>
+      <li><strong>Critical Damage: <span id="critDamageStat">0</span></strong></li>
+      <li><strong>Accuracy: <span id="accuracyStat">0</span></strong></li>
+      <li><strong>Dodge Chance: <span id="dodgeStat">0</span></strong></li>
+      <li><strong>Counter Attack Chance: <span id="counterChanceStat">0</span></strong></li>
+      <li><strong>Counter Attack Damage: <span id="counterDamageStat">0</span></strong></li>
       </ul>
      </div>
+   </div>
+   <div id="itemList">
+    <ul>
+      <li><strong>Sapphire Rings: <span id="sapRingCount">0</span><br><span id="sapRingDesc">Here</span></strong></li>
+      <li><strong>Golden Scarabs: <span id="goldScarCount">0</span><br><span id="goldScarDesc">Here</span></strong></li>
+      <li><strong>Repulsion Armor Scraps: <span id="repScrapCount">0</span><br><span id="repScrapDesc">Here</span></strong></li>
+      <li><strong>Blood Drop Pendants: <span id="bloodPenCount">0</span><br><span id="bloodPenDesc">Here</span></strong></li>
+      <li><strong>Parry Daggers: <span id="parDagCount">0</span><br><span id="parDagDesc">Here</span></strong></li>
+    </ul>
    </div>
    <script src="./script.js"></script>
  </body>
