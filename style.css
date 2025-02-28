@@ -2,23 +2,20 @@ body {
  background-color: #0a0a23;
 }
 
-
 #text {
  background-color: #0a0a23;
  color: #ffffff;
  padding: 10px;
 }
 
-
-#game {
- max-width: 600px;
- max-height: 600px;
+#mainGame {
+ max-width: 750px;
+ max-height: 500px;
  background-color: #ffffff;
  color: #ffffff;
  margin: 30px auto 0px;
  padding: 10px;
 }
-
 
 #controls,
 #stats {
@@ -35,6 +32,13 @@ body {
   background-image: linear-gradient(lightblue, pink);
 }
 
+#itemList {
+  display: none;
+  border: 1px solid #0a0a23;
+  color: black;
+  background-image: linear-gradient(lightblue, #ec797c);
+}
+
 #monsterStats {
  display: none;
  border: 1px solid #0a0a23;
@@ -42,7 +46,6 @@ body {
  color: #ffffff;
  background-color: #c70d0d;
 }
-
 
 #innerButtons {
   display: none;
@@ -52,7 +55,6 @@ body {
   background-color: lightblue;
 }
 
-
 #innerButton1, #innerButton2, #innerButton3, #innerButton4, #innerButton5, #innerButton6 {
   cursor: pointer;
   color: #0a0a23;
@@ -60,11 +62,10 @@ body {
   border: 3px solid #feac32;
 }
 
-
 #levelingText {
   color: #0a0a23;
   background-image: linear-gradient(lightblue, pink);
-  border: 3px solid #feac32;
+  border: 2px solid #e695ea;
 }
 
 #prestige {
@@ -73,6 +74,12 @@ body {
   background-image: linear-gradient(lightblue, #a53dff);
 }
 
+#itemShow {
+  cursor: pointer;
+  color: #0a0a23;
+  background-image: linear-gradient(lightblue, #ec797c);
+  border: 3px solid #feac32;
+}
 
 .stat {
  padding-right: 10px;
@@ -84,6 +91,7 @@ body {
  background-image: linear-gradient(#fecc4c, #ffac33);
  border: 3px solid #feac32;
 }
+
 #button4 {
   cursor: pointer;
    color: #0a0a23;
