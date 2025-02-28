@@ -19,12 +19,14 @@ let dodgeChance = 0.1;
 let accuracy = 0.8;
 let floor = 1;
 let prestige = 0;
+let procChance = .2;
 let bossOne = true;
 let bossTwo = true;
 let finalBoss = true;
 let fightingBoss = false;
-let specialUnlock = false;
 let prestigeUnlock = false;
+let procUnlock = false;
+let itemUnlock = false;
 let gambleNum;
 let monsterHealth;
 let fighting;
@@ -55,6 +57,8 @@ Living Armor (Special)
 
 New concepts:
 Elemental advantages
+weapons shop
+rework weapons
 
 */
 // Initializing queries
@@ -91,6 +95,19 @@ const accStat = document.querySelector("#accuracyStat");
 const dodgeStat = document.querySelector("#dodgeStat");
 const counterCStat = document.querySelector("#counterChanceStat");
 const counterDStat = document.querySelector("#counterDamageStat");
+const itemList = document.querySelector("#itemList");
+const itemShow = document.querySelector("#itemShow");
+const sapRingCount = document.querySelector("#sapRingCount");
+const sapRingDesc = document.querySelector("#sapRingDesc");
+const goldScarCount = document.querySelector("#goldScarCount");
+const goldScarDesc = document.querySelector("#goldScarDesc");
+const repScrapCount = document.querySelector("#repScrapCount");
+const repScrapDesc = document.querySelector("#repScrapDesc");
+const bloodPenCount = document.querySelector("#bloodPenCount");
+const bloodPenDesc = document.querySelector("#bloodPenDesc");
+const parDagCount = document.querySelector("#parDagCount");
+const parDagDesc = document.querySelector("#parDagDesc");
+
 
 // Initializing texts
 xpText.innerText = xp;
@@ -227,8 +244,8 @@ const locations = [
    {
       // 0
       name: "town square",
-      "button text": ["Go to store", "Go to dungeon", "Go to special store"],
-      "button functions": [goStore, goDung, specialStore],
+      "button text": ["Go to store", "Go to dungeon", "Go to item store"],
+      "button functions": [goStore, goDung, itemStore],
       text: "You are in the town square. You see a sign that says \"Store\"."
    },
    {
@@ -289,7 +306,7 @@ const locations = [
    },
    {
       // 9
-      name: "special store",
+      name: "item store",
       "button text": ["Go to town square", "Go to town square", "Go to town square"],
       "button functions": [goTown, goTown, goTown],
       text: "Choose a rare item to buy."
@@ -299,16 +316,18 @@ const locations = [
       name: "Final Floor",
       "button text": ["Fight monster", "Fight final boss", "Go to town square"],
       "button functions": [monsterSearch, goDeeper, goTown],
-      text: "You enter the first floor of the dungeon, it's rough stone architecture is worn and mossy. It's crawling with monsters..."
+      text: "You have reached the thrid and final floor, the master of the dungeon lurks nearby..."
    }
 ];
 
 // initialize buttons
 button1.onclick = goStore;
 button2.onclick = goDung;
-button3.onclick = specialStore;
+button3.onclick = itemStore;
 button3.style.display = "none";
 button4.onclick = levelUp;
+itemShow.onclick = viewItems;
+itemShow.style.display = "none";
 
 statButton.onclick = viewPlayerStats;
 
@@ -317,7 +336,7 @@ innerButton2.onclick = defenseBuff;
 innerButton3.onclick = critBuff;
 innerButton4.onclick = accBuff;
 innerButton5.onclick = dodgeBuff;
-innerButton6.onclick = counterBuff;
+innerButton6.onclick = procBuff;
 
 prestigeText.style.display = "none";
 
@@ -337,10 +356,13 @@ function update(location) {
    {
       prestigeText.style.display = "inline";
    } else { prestigeText.style.display = "none"; }
+   if (itemUnlock) {
+      itemShow.style.display = "inline";
+   } else { itemShow.style.display = "none"; }
 }
 
 function viewPlayerStats() {
-   updatePlayerStats();
+   updateLists();
    statList.style.display = "block";
    statButton.onclick = closePlayerStats;
 }
@@ -350,11 +372,11 @@ function closePlayerStats() {
    statButton.onclick = viewPlayerStats;
 }
 
-function updatePlayerStats() {
-   strStat.innerText = strength;
-   defStat.innerText = def;
+function updateLists() {
+   strStat.innerText = Math.floor(strength);
+   defStat.innerText = Math.floor(def);
    critCStat.innerText = Math.floor(critChance*100) + "%";
-   critDStat.innerText = critDmg+100 + "%";
+   critDStat.innerText = Math.floor(critDmg+100) + "%";
    if (accuracy > 1) {
       accStat.innerText = "100%";
    } else {
@@ -362,18 +384,39 @@ function updatePlayerStats() {
    }
    dodgeStat.innerText = Math.floor(dodgeChance*100) + "%";
    counterCStat.innerText = Math.floor(counterChance*100) + "%";
-   counterDStat.innerText = "X" + counterDmg;
+   counterDStat.innerText = Math.floor(counterDmg*100) + "%";
+   sapRingCount.innerText = items[0].count;
+   sapRingDesc.innerText = items[0].effect;
+   goldScarCount.innerText = items[1].count;
+   goldScarDesc.innerText = items[1].effect;
+   repScrapCount.innerText = items[2].count;
+   repScrapDesc.innerText = items[2].effect;
+   bloodPenCount.innerText = items[3].count;
+   bloodPenDesc.innerText = items[3].effect;
+   parDagCount.innerText = items[4].count;
+   parDagDesc.innerText = items[4].effect;
+}
+
+function viewItems() {
+   updateLists();
+   itemList.style.display = "block";
+   itemShow.onclick = closeItems;
+}
+
+function closeItems() {
+   itemList.style.display = "none";
+   itemShow.onclick = viewItems;
 }
 
 function goTown() {
    fightingBoss = false;
    update(locations[0]);
    button2.style.display = "inline";
-   if (specialUnlock) {
+   if (itemUnlock) {
       button3.style.display = "inline";
       text.innerText += " You can also see a more hidden building that says store on it but in a fancier font.";
    } else { button3.style.display = "none"; }
-   updatePlayerStats();
+   updateLists();
 }
 
 function goStore() {
@@ -403,37 +446,74 @@ function goFloor() {
    }
 }
 
-function specialStore() {
+function itemStore() {
    update(locations[9]);
 }
 
-//let items = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
 let items = [
    {
-      name: "Sapphire Charm",
-      count: 0
+      // XP INCREASE 0
+      name: "Sapphire ring",
+      count: 0,
+      text: "A small sapphire encased in a gold ring, I wonder who was getting married...",
+      effect: "Increases XP gained by 20% (+10% per stack)"
    },
    {
-
+      // GOLD MULTIPLIER 1
+      name: "Golden Scarab",
+      count: 0,
+      text: "A treasure from another world. It gifts riches upon those who adorn it.",
+      effect: "Increase gold gained by 20% (+10% per stack)"
+   },
+   {
+      // FLAT DAMAGE RESISTANCE 2
+      name: "Repulsion Armor Scrap",
+      count: 0,
+      text: "\"No, this is completely original... NO DON\'T LOOK IT UP!\"",
+      effect: "Reduces damage taken from each hit by 10 (+5 per stack)"
+   },
+   {
+      // HEAL ON KILL 3
+      name: "Blood Drop Pendant",
+      count: 0,
+      text: "Dark magic infused in a small, red, perfectly cut gem.",
+      effect: "Killing an enemy grants you 25 health (+25 per stack)"
+   },
+   {
+      // COUNTER DAMAGE INCREASE 4
+      name: "Parry Dagger",
+      count: 0,
+      text: "A small dagger, fitted to deflect attacks for the perfect counter.",
+      effect: "Increase counter damage by 30% (+20% per stack)"
    }
 ]
 /*
 Custom Item bonuses:
-Gold multiplier
-Monster health decrease (min 25%)
-Monster damage decrease (min 50%)
-Increased XP gains
-Increase bought health
-Multiply weapon damage
 proc items (bleed, ignite, shock, freeze)
-flat defense buff
+change dodge chance, crit chance, and counter damage to items
+Meal effectiveness
+increase weapon dmg
 */
-function chanceItem() {
-   if (Math.random() > .9)
-   {
-      whatItem = Math.random() * 20;
 
+let xpBonus = 1;
+let goldBonus = 1;
+let defBonus = 0;
+let leech = 0;
+counterDmg = 1;
+
+function chanceItem() {
+   if (Math.random() > .8)
+   {
+      whatItem = Math.floor(Math.random() * 5);
+      items[whatItem].count++;
+      if (items[0].count > 0) { xpBonus = 1.2 + .1 * items[0].count; }
+      if (items[1].count > 0) { goldBonus = 1.2 + .1 * items[1].count; }
+      if (items[2].count > 0) { defBonus = 10 + 5 * items[2].count; }
+      leech = 25 * items[3].count;
+      if (items[4].count > 0) { counterDmg = 1.3 + .2 * items[4].count; }
+      text.innerText += " The " + monsters[fighting].name + " dropped a " + items[whatItem].name + "!\n\n" + items[whatItem].text;
+      itemUnlock = true;
+      updateLists();
    }
 }
 
@@ -491,11 +571,11 @@ function levelUp() {
       xp -= levelCost;
       levelCost = Math.floor(levelCost * 1.2);
       playerLevel++;
-      xpText.innerText = xp;
+      xpText.innerText = Math.floor(xp);
       levelingText.innerText = "Level: " + playerLevel;
       levelText.innerText = levelCost;
-      strength += 7;
-      def += 5;
+      strength += Math.floor(Math.pow(7, 1+prestige/10));
+      def += Math.floor(Math.pow(5, 1+prestige/10));
       if (dodgeChance > .25) {
          innerButton5.style.display = "none";
       } else {
@@ -505,21 +585,25 @@ function levelUp() {
       innerButton1.innerText = "Strength: " + strength + " -> " + (strength + Math.floor(Math.pow(10, 1+(prestige/10))));
       innerButton2.innerText = "Defense: " + def + " -> " + (def + Math.floor(Math.pow(15, 1+(prestige/10))));
       innerButton3.innerText = "Critical damage: " + Math.floor(critDmg + 100) + "% -> ";
-      if (critChance < 1)
+      if (critChance <= 1)
       {
-         innerButton3.innerText += Math.floor(critDmg + 100 + Math.floor(Math.pow(25, 1+(prestige/10)))) + "% + Critical chance: " + Math.floor(critChance*100) + "% -> " + Math.floor(critChance*100 + 5) + "%";
+         innerButton3.innerText += Math.floor(critDmg + 100 + Math.floor(Math.pow(10, 1+(prestige/10)))) + "% + Critical chance: " + Math.floor(critChance*100) + "% -> " + Math.floor(critChance*100 + 5) + "%";
       } else {
-         innerButton3.innerText += Math.floor(critDmg + Math.floor(Math.pow(25, 1+(prestige/10))) + Math.floor(Math.pow(25, 1+(prestige/10)))) + "%";
+         innerButton3.innerText += Math.floor(critDmg + Math.floor(Math.pow(20, 1+(prestige/10)))) + "%";
       }
       if (accuracy < 1) {
+         innerButton4.style.display = "inline";
          innerButton4.innerText = "Accuracy: " + Math.floor(accuracy*100) + "% -> " + Math.floor(accuracy*100 + 5) + "%";
          innerButton4.innerText += " Additionally, counter chance: " + Math.floor(counterChance*100) + "% -> " + Math.floor(counterChance*100 + 5) + "%";
       } else if (counterChance < .75){
          innerButton4.innerText = "Counter chance: " + Math.floor(counterChance*100) + "% -> " + Math.floor(counterChance*100 + 5) + "%";
       } else { innerButton4.style.display = "none";}
       innerButton5.innerText = "Dodge chance: " + Math.floor(dodgeChance*100) + "% -> " + Math.floor(dodgeChance*100 + 5) + "%";
-      innerButton6.innerText = "Counter Attack: X" + counterDmg + " -> X" + (counterDmg + .2 + Math.floor(prestige/10));
-      updatePlayerStats();
+      if (procUnlock) {
+         innerButton6.style.display = "inline";
+         innerButton6.innerText = "Item activation chance: " + Math.floor(procChance*100) + "% -> " + Math.floor(procChance*100 + 10 + prestige*2) + "%";
+      } else { innerButton6.style.display = "none"; }
+      updateLists();
    }
    else {
       text.innerText = "You don't have the XP for that!";
@@ -539,9 +623,9 @@ function dmgBuff() {
 }
 
 function critBuff() {
-   critDmg += Math.floor(Math.pow(25, 1+(prestige/10)));
+   critDmg += Math.floor(Math.pow(10, 1+(prestige/10)));
    if (critChance >= 1) {
-      critDmg += Math.floor(Math.pow(25, 1+(prestige/10)));
+      critDmg += Math.floor(Math.pow(10, 1+(prestige/10)));
    } else {
       critChance += .05;
    }
@@ -562,8 +646,8 @@ function dodgeBuff() {
    goTown();
 }
 
-function counterBuff() {
-   counterDmg += .2 + Math.floor(prestige/10);
+function procBuff() {
+   procChance += .2 + (prestige*2);
    innerButtons.style.display = "none";
    goTown();
 }
@@ -632,9 +716,6 @@ function goFight() {
    monsterName.innerText = monsters[fighting].name;
    monsterHealthText.innerText = monsterHealth;
    monsterDifText.innerText = monsters[fighting].difficulty;
-}
-
-function attack() {
    if (fightingBoss) {
       text.innerText = "A " + monsters[fighting].name + " is blocking the way!";
       if (!bossOne && !bossTwo) {
@@ -646,9 +727,11 @@ function attack() {
       }
    } else if (fighting == 5) {
       text.innerText = "A special Slime has appeared!!";
-   } else {
-      text.innerText = "The " + monsters[fighting].name + " attacks.";
    }
+}
+
+function attack() {
+      text.innerText = "The " + monsters[fighting].name + " attacks.";
    if (isPlayerHit()) {
       getMonsterAttackValue(monsters[fighting].level);
       health -= monDmg;
@@ -705,7 +788,7 @@ function rollAtt() {
 }
 
 function getMonsterAttackValue(level) {
-   monDmg = (Math.floor(Math.pow(level, 1+(prestige/10))) * 10 - def / 10) * (1 - def / (def + 300));
+   monDmg = (Math.floor(Math.pow(level, 1+(prestige/10))) * 10 - def / 10) * (1 - def / (def + 300)) - defBonus;
    monReflectDmg = Math.floor(Math.pow(level, 1+(prestige/10))) * 10;
    rollAtt();
    dmgRan += .1;
@@ -757,12 +840,12 @@ function defeatMonster() {
    button3.style.display = "none";
    button4.style.display = "inline";
    if (fighting == 5) {
-      xp += 50;
-      gold += 800;
-   } else { gold += Math.floor(Math.pow(monsters[fighting].level, 1.4) * 10); }
+      xp += 50 * xpBonus;
+      gold += 800 * goldBonus;
+   } else { gold += Math.floor(Math.pow(monsters[fighting].level, 1.4) * 10 * goldBonus); }
    if (monsters[fighting].level > 1 && fighting != 5) {
-      xp += Math.floor(Math.pow(monsters[fighting].level, 1.6));
-   } else { xp += 2; }
+      xp += Math.floor(Math.pow(monsters[fighting].level, 1.6) * xpBonus);
+   } else { xp += 2 * xpBonus; }
    if (bossOne && fightingBoss) {
       bossOne = false;
       update(locations[4]);
@@ -772,9 +855,11 @@ function defeatMonster() {
    } else if (fightingBoss) {
       winGame();
    } else { update(locations[4]); }
+   if (!fightingBoss) { chanceItem(); }
    fightingBoss = false;
-   goldText.innerText = gold;
-   xpText.innerText = xp;
+   health += leech;
+   goldText.innerText = Math.floor(gold);
+   xpText.innerText = Math.floor(xp);
    healthText.innerText = health;
 }
 
@@ -818,7 +903,6 @@ function playerPrestige() {
    bossTwo = true;
    finalBoss = true;
    fightingBoss = false;
-   specialUnlock = false;
    prestige++;
 
    button4.style.display = "inline";
@@ -857,7 +941,6 @@ function restart() {
    bossTwo = true;
    finalBoss = true;
    fightingBoss = false;
-   specialUnlock = false;
    prestigeUnlock = false;
 
    button4.style.display = "inline";
