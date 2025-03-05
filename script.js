@@ -60,24 +60,46 @@ Elemental advantages
 weapons shop
 rework weapons
 
+// Image HTML example code
+
+<script type="text/javascript">
+    function changeImage(a) {
+        document.getElementById("img").src=a;
+    }
+</script>
+<div id="main_img">
+    <img id="img" src="placehold">
+</div>
+<div id="thumb_img">
+    <img src='placehold'  onclick='changeImage("placehold");'>
+    <img src='placehold'  onclick='changeImage("placehold");'>
+    <img src='placehold'  onclick='changeImage("placehold");'>
+</div>
+
 */
-// Initializing queries
+// Initializing queries...
 
 const button1 = document.querySelector('#button1');
 const button2 = document.querySelector("#button2");
 const button3 = document.querySelector("#button3");
 const button4 = document.querySelector("#button4");
 const text = document.querySelector("#text");
+
 const xpText = document.querySelector("#xpText");
 const healthText = document.querySelector("#healthText");
 const goldText = document.querySelector("#goldText");
 const levelText = document.querySelector("#levelText");
 const levelingText = document.querySelector("#levelingText");
 const prestigeText = document.querySelector("#prestige");
+
 const monsterStats = document.querySelector("#monsterStats");
 const monsterName = document.querySelector("#monsterName");
 const monsterDifText = document.querySelector("#monsterDif");
 const monsterHealthText = document.querySelector("#monsterHealth");
+
+const focusMenu = document.querySelector("#focusMenu");
+const focusImage = document.querySlector("#focusImage");
+
 const innerButtons = document.querySelector("#innerButtons");
 const innerButton1 = document.querySelector("#innerButton1");
 const innerButton2 = document.querySelector("#innerButton2");
@@ -85,8 +107,10 @@ const innerButton3 = document.querySelector("#innerButton3");
 const innerButton4 = document.querySelector("#innerButton4");
 const innerButton5 = document.querySelector("#innerButton5");
 const innerButton6 = document.querySelector("#innerButton6");
+
 const statButton = document.querySelector("#statShow");
 const statList = document.querySelector("#statList");
+
 const strStat = document.querySelector("#strengthStat");
 const defStat = document.querySelector("#defenseStat");
 const critDStat = document.querySelector("#critDamageStat");
@@ -95,8 +119,10 @@ const accStat = document.querySelector("#accuracyStat");
 const dodgeStat = document.querySelector("#dodgeStat");
 const counterCStat = document.querySelector("#counterChanceStat");
 const counterDStat = document.querySelector("#counterDamageStat");
+
 const itemList = document.querySelector("#itemList");
 const itemShow = document.querySelector("#itemShow");
+
 const sapRingCount = document.querySelector("#sapRingCount");
 const sapRingDesc = document.querySelector("#sapRingDesc");
 const goldScarCount = document.querySelector("#goldScarCount");
@@ -477,7 +503,7 @@ let items = [
       name: "Blood Drop Pendant",
       count: 0,
       text: "Dark magic infused in a small, red, perfectly cut gem.",
-      effect: "Killing an enemy grants you 25 health (+25 per stack)"
+      effect: "Killing an enemy grants you 15 health (+15 per stack)"
    },
    {
       // COUNTER DAMAGE INCREASE 4
@@ -506,11 +532,11 @@ function chanceItem() {
    {
       whatItem = Math.floor(Math.random() * 5);
       items[whatItem].count++;
-      if (items[0].count > 0) { xpBonus = 1.2 + .1 * items[0].count; }
-      if (items[1].count > 0) { goldBonus = 1.2 + .1 * items[1].count; }
-      if (items[2].count > 0) { defBonus = 10 + 5 * items[2].count; }
-      leech = 25 * items[3].count;
-      if (items[4].count > 0) { counterDmg = 1.3 + .2 * items[4].count; }
+      if (items[0].count > 0) { xpBonus = 1.2 + .1 * items[0].count - 1; }
+      if (items[1].count > 0) { goldBonus = 1.2 + .1 * items[1].count - 1; }
+      if (items[2].count > 0) { defBonus = 10 + 5 * items[2].count - 1; }
+      leech = 15 * items[3].count;
+      if (items[4].count > 0) { counterDmg = 1.3 + .2 * items[4].count - 1; }
       text.innerText += " The " + monsters[fighting].name + " dropped a " + items[whatItem].name + "!\n\n" + items[whatItem].text;
       itemUnlock = true;
       updateLists();
