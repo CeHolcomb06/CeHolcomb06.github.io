@@ -27,6 +27,7 @@ let fightingBoss = false;
 let prestigeUnlock = false;
 let procUnlock = false;
 let itemUnlock = false;
+let floor2Shop = false;
 let gambleNum;
 let monsterHealth;
 let fighting;
@@ -83,6 +84,7 @@ const button1 = document.querySelector('#button1');
 const button2 = document.querySelector("#button2");
 const button3 = document.querySelector("#button3");
 const button4 = document.querySelector("#button4");
+const controls = document.querySelector("#controls");
 const text = document.querySelector("#text");
 
 const xpText = document.querySelector("#xpText");
@@ -98,7 +100,7 @@ const monsterDifText = document.querySelector("#monsterDif");
 const monsterHealthText = document.querySelector("#monsterHealth");
 
 const focusMenu = document.querySelector("#focusMenu");
-const focusImage = document.querySlector("#focusImage");
+const focusImage = document.querySelector("#focusImage");
 
 const innerButtons = document.querySelector("#innerButtons");
 const innerButton1 = document.querySelector("#innerButton1");
@@ -135,11 +137,12 @@ const parDagCount = document.querySelector("#parDagCount");
 const parDagDesc = document.querySelector("#parDagDesc");
 
 
-// Initializing texts
+// Initializing Menu
 xpText.innerText = xp;
 healthText.innerText = health;
 goldText.innerText = gold;
 levelText.innerText = levelCost;
+focusMenu.style.display = "none";
 
 // WEAPONS
 const weapons = [
@@ -150,6 +153,11 @@ const weapons = [
    { name: 'greatsword', power: 25 }
 ];
 
+const specialWeapons = [
+   { name: 'fire spell', effect: 'fire'},
+
+]
+
 // MONSTERS
 const monsters = [
    {
@@ -158,7 +166,8 @@ const monsters = [
       name: "Slime",
       level: 1,
       health: 10,
-      difficulty: "Easy"
+      difficulty: "Easy",
+      image: "images/slime.jpeg"
    },
    {
       // floor 1
@@ -166,7 +175,8 @@ const monsters = [
       name: "Tusked Boar",
       level: 3,
       health: 25,
-      difficulty: "Hard"
+      difficulty: "Hard",
+      image: "images/boar.jpeg"
    },
    {
       // floor 1 boss
@@ -174,7 +184,8 @@ const monsters = [
       name: "Large Tusked Boar",
       level: 5,
       health: 90,
-      difficulty: "First Boss"
+      difficulty: "First Boss",
+      image: ""
    },
    {
       // floor 1
@@ -182,7 +193,8 @@ const monsters = [
       name: "Giant Beetle",
       level: 2,
       health: 15,
-      difficulty: "Medium"
+      difficulty: "Medium",
+      image: "images/bug.jpeg"
    },
    {
       // floor 2
@@ -190,7 +202,8 @@ const monsters = [
       name: "Flower Mimic",
       level: 4,
       health: 85,
-      difficulty: "Easy"
+      difficulty: "Easy",
+      image: ""
    },
    {
       // Special Monster
@@ -198,7 +211,8 @@ const monsters = [
       name: "Massive Slime",
       level: Math.floor(playerLevel/2),
       health: Math.floor(health*7.5),
-      difficulty: "Special"
+      difficulty: "Special",
+      image: ""
    },
    {
       // floor 2
@@ -206,7 +220,8 @@ const monsters = [
       name: "Small Stone Golem",
       level: 6,
       health: 200,
-      difficulty: "Medium"
+      difficulty: "Medium",
+      image: ""
    },
    {
       // floor 2 boss
@@ -214,7 +229,8 @@ const monsters = [
       name: "Massive Bearded Dragon",
       level: 10,
       health: 340,
-      difficulty: "Second Boss"
+      difficulty: "Second Boss",
+      image: ""
    },
    {
       // floor 2
@@ -222,7 +238,8 @@ const monsters = [
       name: "Insane Adventurer",
       level: 8,
       health: 175,
-      difficulty: "Hard"
+      difficulty: "Hard",
+      image: ""
    },
    {
       // floor 3
@@ -230,7 +247,8 @@ const monsters = [
       name: "Fire Elemental",
       level: 11,
       health: 280,
-      difficulty: "Easy"
+      difficulty: "Easy",
+      image: ""
    },
    {
       // floor 3
@@ -238,7 +256,8 @@ const monsters = [
       name: "Large Stone Golem",
       level: 13,
       health: 500,
-      difficulty: "Medium"
+      difficulty: "Medium",
+      image: ""
    },
    {
       // floor 3
@@ -246,7 +265,8 @@ const monsters = [
       name: "Lava Lizard",
       level: 15,
       health: 350,
-      difficulty: "Hard"
+      difficulty: "Hard",
+      image: ""
    },
    {
       // floor 3 boss
@@ -254,7 +274,8 @@ const monsters = [
       name: "Red Dragon",
       level: 20,
       health: 1000,
-      difficulty: "FINAL BOSS"
+      difficulty: "FINAL BOSS",
+      image: ""
    },
    {
       // Phantom
@@ -262,7 +283,8 @@ const monsters = [
       name: "The Ghost of Red Dragon",
       level: 30,
       health: 2500,
-      difficulty: "Good Luck"
+      difficulty: "Good Luck",
+      image: ""
    }
 ]
 // LOCATIONS
@@ -343,6 +365,13 @@ const locations = [
       "button text": ["Fight monster", "Fight final boss", "Go to town square"],
       "button functions": [monsterSearch, goDeeper, goTown],
       text: "You have reached the thrid and final floor, the master of the dungeon lurks nearby..."
+   },
+   {
+      // 11
+      name: "Special Weapons Store",
+      "button text": ["Go back to town", "go back to the main dungeon", ""],
+      "button functions": [goTown, goFloor, null],
+      text: "Come back later for more!"
    }
 ];
 
@@ -385,6 +414,7 @@ function update(location) {
    if (itemUnlock) {
       itemShow.style.display = "inline";
    } else { itemShow.style.display = "none"; }
+   updateLists();
 }
 
 function viewPlayerStats() {
@@ -437,12 +467,12 @@ function closeItems() {
 function goTown() {
    fightingBoss = false;
    update(locations[0]);
+   floor = 0;
    button2.style.display = "inline";
    if (itemUnlock) {
       button3.style.display = "inline";
       text.innerText += " You can also see a more hidden building that says store on it but in a fancier font.";
    } else { button3.style.display = "none"; }
-   updateLists();
 }
 
 function goStore() {
@@ -460,6 +490,7 @@ function goDung() {
 
 function goFloor() {
    button4.style.display = "inline";
+   focusMenu.style.display = "none";
    fightingBoss = false;
    update(locations[2]);
    if (floor == 2) {
@@ -474,6 +505,11 @@ function goFloor() {
 
 function itemStore() {
    update(locations[9]);
+}
+
+function specialStore() {
+   update(locations[11]);
+   button3.style.display = "none";
 }
 
 let items = [
@@ -528,15 +564,15 @@ let leech = 0;
 counterDmg = 1;
 
 function chanceItem() {
-   if (Math.random() > .8)
+   if (Math.random() > .7)
    {
       whatItem = Math.floor(Math.random() * 5);
       items[whatItem].count++;
-      if (items[0].count > 0) { xpBonus = 1.2 + .1 * items[0].count - 1; }
-      if (items[1].count > 0) { goldBonus = 1.2 + .1 * items[1].count - 1; }
-      if (items[2].count > 0) { defBonus = 10 + 5 * items[2].count - 1; }
+      if (items[0].count > 0) { xpBonus = 1.2 + .1 * (items[0].count - 1); }
+      if (items[1].count > 0) { goldBonus = 1.2 + .1 * (items[1].count - 1); }
+      if (items[2].count > 0) { defBonus = 10 + 5 * (items[2].count - 1); }
       leech = 15 * items[3].count;
-      if (items[4].count > 0) { counterDmg = 1.3 + .2 * items[4].count - 1; }
+      if (items[4].count > 0) { counterDmg = 1.3 + .2 * (items[4].count - 1); }
       text.innerText += " The " + monsters[fighting].name + " dropped a " + items[whatItem].name + "!\n\n" + items[whatItem].text;
       itemUnlock = true;
       updateLists();
@@ -590,10 +626,7 @@ function sellWeapon() {
 
 function levelUp() {
    if (xp >= levelCost) {
-      button1.style.display = "none";
-      button2.style.display = "none";
-      button3.style.display = "none";
-      innerButtons.style.display = "block";
+      innerButtons.style.display = "flex";
       xp -= levelCost;
       levelCost = Math.floor(levelCost * 1.2);
       playerLevel++;
@@ -602,32 +635,40 @@ function levelUp() {
       levelText.innerText = levelCost;
       strength += Math.floor(Math.pow(7, 1+prestige/10));
       def += Math.floor(Math.pow(5, 1+prestige/10));
+      innerButton1.onclick = dmgBuff;
+      innerButton2.onclick = defenseBuff;
+      innerButton3.onclick = critBuff;
+      innerButton4.onclick = accBuff;
+      innerButton5.onclick = dodgeBuff;
+      innerButton6.onclick = procBuff;
+      innerButtons.style.backgroundColor = "lightblue";
       if (dodgeChance > .25) {
          innerButton5.style.display = "none";
       } else {
          innerButton5.style.display = "inline";
       }
       update(locations[8]);
+      controls.style.display = "none";
       innerButton1.innerText = "Strength: " + strength + " -> " + (strength + Math.floor(Math.pow(10, 1+(prestige/10))));
       innerButton2.innerText = "Defense: " + def + " -> " + (def + Math.floor(Math.pow(15, 1+(prestige/10))));
-      innerButton3.innerText = "Critical damage: " + Math.floor(critDmg + 100) + "% -> ";
+      innerButton3.innerText = "Critical Damage: " + Math.floor(critDmg + 100) + "% -> ";
       if (critChance <= 1)
       {
-         innerButton3.innerText += Math.floor(critDmg + 100 + Math.floor(Math.pow(10, 1+(prestige/10)))) + "% + Critical chance: " + Math.floor(critChance*100) + "% -> " + Math.floor(critChance*100 + 5) + "%";
+         innerButton3.innerText += Math.floor(critDmg + 100 + Math.floor(Math.pow(10, 1+(prestige/10)))) + "% + Critical Chance: " + Math.floor(critChance*100) + "% -> " + Math.floor(critChance*100 + 5) + "%";
       } else {
          innerButton3.innerText += Math.floor(critDmg + Math.floor(Math.pow(20, 1+(prestige/10)))) + "%";
       }
       if (accuracy < 1) {
          innerButton4.style.display = "inline";
          innerButton4.innerText = "Accuracy: " + Math.floor(accuracy*100) + "% -> " + Math.floor(accuracy*100 + 5) + "%";
-         innerButton4.innerText += " Additionally, counter chance: " + Math.floor(counterChance*100) + "% -> " + Math.floor(counterChance*100 + 5) + "%";
+         innerButton4.innerText += " + Counter Chance: " + Math.floor(counterChance*100) + "% -> " + Math.floor(counterChance*100 + 5) + "%";
       } else if (counterChance < .75){
-         innerButton4.innerText = "Counter chance: " + Math.floor(counterChance*100) + "% -> " + Math.floor(counterChance*100 + 5) + "%";
+         innerButton4.innerText = "Counter Chance: " + Math.floor(counterChance*100) + "% -> " + Math.floor(counterChance*100 + 5) + "%";
       } else { innerButton4.style.display = "none";}
-      innerButton5.innerText = "Dodge chance: " + Math.floor(dodgeChance*100) + "% -> " + Math.floor(dodgeChance*100 + 5) + "%";
+      innerButton5.innerText = "Dodge Chance: " + Math.floor(dodgeChance*100) + "% -> " + Math.floor(dodgeChance*100 + 5) + "%";
       if (procUnlock) {
          innerButton6.style.display = "inline";
-         innerButton6.innerText = "Item activation chance: " + Math.floor(procChance*100) + "% -> " + Math.floor(procChance*100 + 10 + prestige*2) + "%";
+         innerButton6.innerText = "Item Activation Chance: " + Math.floor(procChance*100) + "% -> " + Math.floor(procChance*100 + 10 + prestige*2) + "%";
       } else { innerButton6.style.display = "none"; }
       updateLists();
    }
@@ -636,16 +677,21 @@ function levelUp() {
    }
 }
 
+function levelUpReturn() {
+   if (floor == 0) { goTown(); }
+   else { goFloor(); }
+   innerButtons.style.display = "none";
+   controls.style.display = "block";
+}
+
 function defenseBuff() {
    def = Math.floor(def + Math.floor(Math.pow(15, 1+(prestige/10))));
-   innerButtons.style.display = "none";
-   goTown();
+   levelUpReturn();
 }
 
 function dmgBuff() {
    strength = Math.floor(strength + Math.floor(Math.pow(10, 1+(prestige/10))));
-   innerButtons.style.display = "none";
-   goTown();
+   levelUpReturn();
 }
 
 function critBuff() {
@@ -655,27 +701,23 @@ function critBuff() {
    } else {
       critChance += .05;
    }
-   innerButtons.style.display = "none";
-   goTown();
+   levelUpReturn();
 }
 
 function accBuff() {
    accuracy += .05;
    counterChance += .05;
-   innerButtons.style.display = "none";
-   goTown();
+   levelUpReturn();
 }
 
 function dodgeBuff() {
    dodgeChance += .05;
-   innerButtons.style.display = "none";
-   goTown();
+   levelUpReturn();
 }
 
 function procBuff() {
    procChance += .2 + (prestige*2);
-   innerButtons.style.display = "none";
-   goTown();
+   levelUpReturn();
 }
 
 function monsterSearch() {
@@ -704,6 +746,8 @@ function monsterSearch() {
    } else {
       fighting = 5;
    }
+   focusImage.src = monsters[fighting].image;
+   focusMenu.style.display = "flex";
    goFight();
 }
 
@@ -754,10 +798,14 @@ function goFight() {
    } else if (fighting == 5) {
       text.innerText = "A special Slime has appeared!!";
    }
+   innerButtons.style.display = "flex";
+   innerButton1.style.display= "inline";
+   innerButton1.innerText = "equip your " + weapons[currentWeapon].name;
+
 }
 
-function attack() {
-      text.innerText = "The " + monsters[fighting].name + " attacks.";
+function playerAttack() {
+      /*text.innerText = "The " + monsters[fighting].name + " attacks.";
    if (isPlayerHit()) {
       getMonsterAttackValue(monsters[fighting].level);
       health -= monDmg;
@@ -766,7 +814,7 @@ function attack() {
    } else {
       text.innerText += " You dodged it's attack!";
       console.log("Monster miss. ");
-   }
+   }*/
    text.innerText += " You attack it with your " + weapons[currentWeapon].name + ".";
    if (isMonsterHit()) {
       attDmg = weapons[currentWeapon].power * (1 + strength / 20);
@@ -793,6 +841,27 @@ function attack() {
    {
       defeatMonster();
    }
+   setTimeout(monsterAttack, 2000);
+}
+
+function monsterAttack() {
+   text.innerText = "The " + monsters[fighting].name + " attacks.";
+   if (isPlayerHit()) {
+      getMonsterAttackValue(monsters[fighting].level);
+      health -= monDmg;
+      healthText.innerText = health;
+      text.innerText += " It did " + monDmg + " damage to you.";
+   } else {
+      text.innerText += " You dodged it's attack!";
+      console.log("Monster miss. ");
+   }
+   if (health <= 0)
+      {
+         lose();
+      } else if (monsterHealth <= 0)
+      {
+         defeatMonster();
+      }
 }
 
 function isCrit() {
@@ -818,6 +887,7 @@ function getMonsterAttackValue(level) {
    monReflectDmg = Math.floor(Math.pow(level, 1+(prestige/10))) * 10;
    rollAtt();
    dmgRan += .1;
+   if (Math.random() > .9) { dmgRan *= 2; }
    monDmg = Math.floor(monDmg * dmgRan);
    monReflectDmg = Math.floor(monReflectDmg * dmgRan);
    console.log("Monster Attack: " + monDmg);
@@ -835,6 +905,7 @@ function isPlayerHit() {
 }
 
 function counterAttack() {
+   // REWORK ALL OF THIS
    text.innerText = "You attempt to counter the " + monsters[fighting].name + "'s attack.";
    if (Math.random() < counterChance)
    {
@@ -863,6 +934,8 @@ function counterAttack() {
 }
 
 function defeatMonster() {
+   // Change focus to be money after kill
+   focusMenu.style.display = "none";
    button3.style.display = "none";
    button4.style.display = "inline";
    if (fighting == 5) {
@@ -891,9 +964,11 @@ function defeatMonster() {
 
 function lose() {
    update(locations[5]);
+   focusMenu.style.display = "none";
 }
 
 function winGame() {
+   focusMenu.style.display = "none";
    prestigeUnlock = true;
    button3.style.display = "inline";
    update(locations[6]);
