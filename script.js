@@ -1,23 +1,20 @@
 // Initializing variables
 let xp = 0;
-let health = 200;
+let levelCost = 5;
+let health = 250;
+let maxHealth = 250;
 let gold = 50;
 let currentWeapon = 0;
-let price = 250;
-let levelCost = 5;
 let playerLevel = 1;
 let strength = 0;
 let def = 0;
 let critDmg = 100;
 let critChance = 0.1;
-let counterDmg = 1;
-let counterChance = .3
 let monMod = 1;
 let goldMult = 1;
 let dodgeChance = 0.1;
 let accuracy = 0.8;
 let floor = 1;
-let prestige = 0;
 let procChance = .2;
 let foodRegen = 20;
 let addAttChance = 1;
@@ -25,7 +22,6 @@ let bossOne = true;
 let bossTwo = true;
 let finalBoss = true;
 let fightingBoss = false;
-let prestigeUnlock = false;
 let procUnlock = false;
 let itemUnlock = false;
 let floor2Shop = false;
@@ -98,7 +94,6 @@ const healthText = document.querySelector("#healthText");
 const goldText = document.querySelector("#goldText");
 const levelText = document.querySelector("#levelText");
 const levelingText = document.querySelector("#levelingText");
-const prestigeText = document.querySelector("#prestige");
 
 const monsterStats = document.querySelector("#monsterStats");
 const monsterName = document.querySelector("#monsterName");
@@ -126,8 +121,6 @@ const critCStat = document.querySelector("#critChanceStat");
 const accStat = document.querySelector("#accuracyStat");
 const dodgeStat = document.querySelector("#dodgeStat");
 const addAttStat = document.querySelector("#addAttStat");
-const counterCStat = document.querySelector("#counterChanceStat");
-const counterDStat = document.querySelector("#counterDamageStat");
 
 const itemList = document.querySelector("#itemList");
 const itemShow = document.querySelector("#itemShow");
@@ -140,13 +133,13 @@ const repScrapCount = document.querySelector("#repScrapCount");
 const repScrapDesc = document.querySelector("#repScrapDesc");
 const bloodPenCount = document.querySelector("#bloodPenCount");
 const bloodPenDesc = document.querySelector("#bloodPenDesc");
-const parDagCount = document.querySelector("#parDagCount");
-const parDagDesc = document.querySelector("#parDagDesc");
+const dwarfCharmCount = document.querySelector("#dwarfCharmCount");
+const dwarfCharmDesc = document.querySelector("#dwarfCharmDesc");
 
 
 // Initializing Menu
-xpText.innerText = xp;
-healthText.innerText = health;
+xpText.innerText = `${xp}/${levelCost}`;
+healthText.innerText = `${health}/${maxHealth}`;
 goldText.innerText = gold;
 levelText.innerText = levelCost;
 focusMenu.style.display = "none";
@@ -155,14 +148,14 @@ focusMenu.style.display = "none";
 const weapons = [
    { name: 'stick', power: 2, chance: 1, speed: 3, price: 0},
    { name: 'dagger', power: 5, chance: 3, speed: 2, price: 300 },
-   { name: 'axe', power: 12, chance: 4, speed: 1 price: 300 },
+   { name: 'axe', power: 12, chance: 4, speed: 1, price: 300 },
    { name: 'sword', power: 16, chance: 5, speed: 2, price: 1000 },
    { name: 'scimitars', power: 12, chance: 6, speed: 4, price: 2000 },
    { name: 'greatsword', power: 64, chance: 16, speed: 1, price: 2000 }
 ];
 /*
 const specialWeapons = [
-   { name: 'fire spell', effect: 'fire'}
+   make weapons :3
 
 ]
 */
@@ -321,8 +314,8 @@ const locations = [
    {
       // 3
       name: "fight",
-      "button text": ["Attack", "Counterattack", "Run"],
-      "button functions": [playerAttack, counterAttack, goFloor],
+      "button text": ["", "", ""],
+      "button functions": [null, null, null],
       text: "You approach the nearest monster."
    },
    {
@@ -342,8 +335,8 @@ const locations = [
    {
       // 6
       name: "win",
-      "button text": ["REPLAY?", "CONTINUE?", "PRESTIGE?"],
-      "button functions": [restart, goTown, playerPrestige],
+      "button text": ["REPLAY?", "CONTINUE?", ""],
+      "button functions": [restart, goTown, null],
       text: "You've defeated the Red Dragon! The town can live with a little more peace now, all thanks to you!' &#x1F389;"
    },
    {
@@ -356,7 +349,7 @@ const locations = [
    {
       // 8
       name: "level up",
-      "button text": [" VVV ", " VVV ", " VVV "],
+      "button text": ["", "", ""],
       "button functions": [null, null, null],
       text: "You have leveled up! You have grown more powerful! But you can additionally choose an effect to apply to your journey!"
    },
@@ -382,23 +375,30 @@ const locations = [
       text: "Come back later for more!"
    }
 ];
-
+// problem
 const innerLocations = [
    {
       // 0
-      name: "store",
-      "button text": [`buy food for 10 gold (${foodRegen})`, "buy a dagger", "buy an axe", "buy a sword" "buy scimitars", "buy a greatsword"],
-      "button functions": [buyHealth, equipDagger, equipAxe, equipSword, equipScimitars, equipGreatsword],
+      name: "inner store",
+      text: [`buy food for 10 gold (${foodRegen} health)`, "buy a dagger", "buy an axe", "buy a sword", "buy scimitars", "buy a greatsword"],
+      functions: [buyHealth, equipDagger, equipAxe, equipSword, equipScimitars, equipGreatsword],
       background: "lightblue"
    },
    {
       // 1
-      name: "level up",
-      "button text": [("Strength: " + strength + " -> " + (strength + Math.floor(Math.pow(10, 1+(prestige/10))))),
-         ("Defense: " + def + " -> " + (def + Math.floor(Math.pow(15, 1+(prestige/10))))),
-         ("Critical Damage: " + Math.floor(critDmg + 100) + "% -> "), "", "", ""],
-      "button functions": [dmgBuff, defenseBuff, critBuff, accBuff, speedBuff, procBuff],
+      name: "inner level up",
+      text: [("Strength: " + strength + " -> " + strength + 10),
+         ("Defense: " + def + " -> " + (def + 10)),
+         ("Rework"), "", "", ""],
+      functions: [dmgBuff, defenseBuff, elemBuff, accBuff, speedBuff, procBuff],
       background: "lightblue"
+   },
+   {
+      // 2
+      name: "fight",
+      text: [`Equip your ${currentWeapon}`, "Defend", "", "Imbue your weapon with fire", "Imbue your weapon with ice", "imbue your weapon with lightning"],
+      functions: [equipWeapon, defend, null, addFire, addIce, addLightning],
+      background: "#ef8011"
    }
 ];
 
@@ -415,12 +415,10 @@ statButton.onclick = viewPlayerStats;
 
 innerButton1.onclick = dmgBuff;
 innerButton2.onclick = defenseBuff;
-innerButton3.onclick = critBuff;
+innerButton3.onclick = elemBuff;
 innerButton4.onclick = accBuff;
 innerButton5.onclick = speedBuff;
 innerButton6.onclick = procBuff;
-
-prestigeText.style.display = "none";
 
 function update(location) {
    monsterStats.style.display = "none";
@@ -434,48 +432,41 @@ function update(location) {
    button1.style.display = "inline";
    button2.style.display = "inline";
    button3.style.display = "inline";
-   if (prestigeUnlock)
-   {
-      prestigeText.style.display = "inline";
-   } else { prestigeText.style.display = "none"; }
    if (itemUnlock) {
       itemShow.style.display = "inline";
    } else { itemShow.style.display = "none"; }
+   if (button1.innerText == "")
+   {
+      button1.style.display = "none";
+   } else { button1.style.display = "inline"; }
+   if (button1.innerText == "") { button1.style.display = "none"; } else { button1.style.display = "inline"; }
+   if (button2.innerText == "") { button2.style.display = "none"; } else { button2.style.display = "inline"; }
+   if (button3.innerText == "") { button3.style.display = "none"; } else { button3.style.display = "inline"; }
    updateLists();
 }
 
-function innerUpdate(innerLocation) {
+function innerUpdate(num) {
    innerButtons.style.display = "flex";
-   innerButton1.innerText = innerLocation["button text"][0];
-   innerButton2.innerText = innerLocation["button text"][1];
-   innerButton3.innerText = innerLocation["button text"][2];
-   innerButton4.innerText = innerLocation["button text"][3];
-   innerButton5.innerText = innerLocation["button text"][4];
-   innerButton6.innerText = innerLocation["button text"][5];
-   innerButton1.onclick = innerLocation["button function"][0];
-   innerButton2.onclick = innerLocation["button function"][1];
-   innerButton3.onclick = innerLocation["button function"][2];
-   innerButton4.onclick = innerLocation["button function"][3];
-   innerButton5.onclick = innerLocation["button function"][4];
-   innerButton6.onclick = innerLocation["button function"][5];
-   innerButtons.style.background-color = innerLocation[background];
+   innerButton1.innerText = innerLocations[num].text[0];
+   innerButton2.innerText = innerLocations[num].text[1];
+   innerButton3.innerText = innerLocations[num].text[2];
+   innerButton4.innerText = innerLocations[num].text[3];
+   innerButton5.innerText = innerLocations[num].text[4];
+   innerButton6.innerText = innerLocations[num].text[5];
+   innerButton1.onclick = innerLocations[num].functions[0];
+   innerButton2.onclick = innerLocations[num].functions[1];
+   innerButton3.onclick = innerLocations[num].functions[2];
+   innerButton4.onclick = innerLocations[num].functions[3];
+   innerButton5.onclick = innerLocations[num].functions[4];
+   innerButton6.onclick = innerLocations[num].functions[5];
+   innerButtons.style.backgroundColor = innerLocations[num].background;
 
-   /*if (innerLocation == innerLocations[1])
+   if (num == 1)
    {
-      if (critChance <= 1)
-         {
-            innerButton3.innerText += Math.floor(critDmg + 100 + Math.floor(Math.pow(10, 1+(prestige/10)))) + "% + Critical Chance: " + Math.floor(critChance*100) + "% -> " + Math.floor(critChance*100 + 5) + "%";
-         } else {
-            innerButton3.innerText += Math.floor(critDmg + Math.floor(Math.pow(20, 1+(prestige/10)))) + "%";
-         }
-
          if (accuracy < 1) {
             innerButton4.style.display = "inline";
             innerButton4.innerText = "Accuracy: " + Math.floor(accuracy*100) + "% -> " + Math.floor(accuracy*100 + 5) + "%";
-            innerButton4.innerText += " + Counter Chance: " + Math.floor(counterChance*100) + "% -> " + Math.floor(counterChance*100 + 5) + "%";
-         } else if (counterChance < .75){
-            innerButton4.innerText = "Counter Chance: " + Math.floor(counterChance*100) + "% -> " + Math.floor(counterChance*100 + 5) + "%";
-         } else { innerButton4.style.display = "none";}
+         } else { innerButton4.innerText = "";}
          if (dodgeChance > .25) {
             innerButton5.innerText = "Additional chance to attack: " + Math.floor(addAttChance) + "%";
          } else {
@@ -483,9 +474,16 @@ function innerUpdate(innerLocation) {
          }
          if (procUnlock) {
             innerButton6.style.display = "inline";
-            innerButton6.innerText = "Item Activation Chance: " + Math.floor(procChance*100) + "% -> " + Math.floor(procChance*100 + 10 + prestige*2) + "%";
-         } else { innerButton6.style.display = "none"; }
-   }*/
+            innerButton6.innerText = "Item Activation Chance: " + Math.floor(procChance*100) + "% -> " + Math.floor(procChance*100 + 10) + "%";
+         } else { innerButton6.innerText = ""; }
+   }
+
+   if (innerButton1.innerText == "") { innerButton1.style.display = "none"; } else { innerButton1.style.display = "inline"; }
+   if (innerButton2.innerText == "") { innerButton2.style.display = "none"; } else { innerButton2.style.display = "inline"; }
+   if (innerButton3.innerText == "") { innerButton3.style.display = "none"; } else { innerButton3.style.display = "inline"; }
+   if (innerButton4.innerText == "") { innerButton4.style.display = "none"; } else { innerButton4.style.display = "inline"; }
+   if (innerButton5.innerText == "") { innerButton5.style.display = "none"; } else { innerButton5.style.display = "inline"; }
+   if (innerButton6.innerText == "") { innerButton6.style.display = "none"; } else { innerButton6.style.display = "inline"; }
 }
 
 function viewPlayerStats() {
@@ -511,8 +509,6 @@ function updateLists() {
    }
    dodgeStat.innerText = Math.floor(dodgeChance*100) + "%";
    addAttStat.innerText = Math.floor(addAttChance) + "%";
-   counterCStat.innerText = Math.floor(counterChance*100) + "%";
-   counterDStat.innerText = Math.floor(counterDmg*100) + "%";
    sapRingCount.innerText = items[0].count;
    sapRingDesc.innerText = items[0].effect;
    goldScarCount.innerText = items[1].count;
@@ -521,8 +517,8 @@ function updateLists() {
    repScrapDesc.innerText = items[2].effect;
    bloodPenCount.innerText = items[3].count;
    bloodPenDesc.innerText = items[3].effect;
-   parDagCount.innerText = items[4].count;
-   parDagDesc.innerText = items[4].effect;
+   dwarfCharmCount.innerText = items[4].count;
+   dwarfCharmDesc.innerText = items[4].effect;
 }
 
 function viewItems() {
@@ -539,8 +535,8 @@ function closeItems() {
 function goTown() {
    fightingBoss = false;
    update(locations[0]);
+   innerButtons.style.display = "none";
    floor = 0;
-   button2.style.display = "inline";
    if (itemUnlock) {
       button3.style.display = "inline";
       text.innerText += " You can also see a more hidden building that says store on it but in a fancier font.";
@@ -549,6 +545,8 @@ function goTown() {
 
 function goStore() {
    update(locations[1]);
+   innerUpdate(0);
+
    if (currentWeapon < weapons.length - 1) {
       button2.innerText = "Buy weapon (" + price + " gold)";
    }
@@ -582,7 +580,6 @@ function itemStore() {
 
 function specialStore() {
    update(locations[11]);
-   button3.style.display = "none";
 }
 
 let items = [
@@ -605,28 +602,27 @@ let items = [
       name: "Repulsion Armor Scrap",
       count: 0,
       text: "\"No, this is completely original... NO DON\'T LOOK IT UP!\"",
-      effect: "Reduces damage taken from each hit by 10 (+5 per stack)"
+      effect: "Reduces damage taken from each hit by 3 (+3 per stack)"
    },
    {
       // HEAL ON KILL 3
       name: "Blood Drop Pendant",
       count: 0,
       text: "Dark magic infused in a small, red, perfectly cut gem.",
-      effect: "Killing an enemy grants you 15 health (+15 per stack)"
+      effect: "Killing an enemy grants you 10 health (+10 per stack)"
    },
    {
-      // COUNTER DAMAGE INCREASE 4
-      name: "Parry Dagger",
+      // MEAL EFFECTIVENESS 4
+      name: "Dwarf Charm",
       count: 0,
-      text: "A small dagger, fitted to deflect attacks for the perfect counter.",
-      effect: "Increase counter damage by 30% (+20% per stack)"
+      text: "A small charm of a dwarf with a large, black beard. He must've been a great cook in his time...",
+      effect: "Increases the health you recover from meals by 5 (+5 per stack)"
    }
 ]
 /*
 Custom Item bonuses:
 proc items (bleed, ignite, shock, freeze)
-change dodge chance, crit chance, and counter damage to items
-Meal effectiveness
+change dodge chance, and crit chance to items
 increase weapon dmg
 */
 
@@ -634,18 +630,17 @@ let xpBonus = 1;
 let goldBonus = 1;
 let defBonus = 0;
 let leech = 0;
-counterDmg = 1;
 
 function chanceItem() {
-   if (Math.random() > .7)
+   if (Math.random() > .8)
    {
       whatItem = Math.floor(Math.random() * 5);
       items[whatItem].count++;
       if (items[0].count > 0) { xpBonus = 1.2 + .1 * (items[0].count - 1); }
       if (items[1].count > 0) { goldBonus = 1.2 + .1 * (items[1].count - 1); }
-      if (items[2].count > 0) { defBonus = 10 + 5 * (items[2].count - 1); }
-      leech = 15 * items[3].count;
-      if (items[4].count > 0) { counterDmg = 1.3 + .2 * (items[4].count - 1); }
+      if (items[2].count > 0) { defBonus = 3 * items[2].count; }
+      leech = 10 * items[3].count;
+      foodRegen = 10 + 5 * items[4].count;
       text.innerText += " The " + monsters[fighting].name + " dropped a " + items[whatItem].name + "!\n\n" + items[whatItem].text;
       itemUnlock = true;
       updateLists();
@@ -655,48 +650,15 @@ function chanceItem() {
 function buyHealth() {
    if (gold >= 10) {
       gold -= 10;
-      health += 20;
+      health += foodRegen;
+      if (health > maxHealth) { health = maxHealth; }
       goldText.innerText = gold;
-      healthText.innerText = health;
+      healthText.innerText = `${health}/${maxHealth}`;
    } else {
       text.innerText = "You do not have enough gold to buy health.";
    }
 }
-// REWORKING
-/*function buyWeapon() {
-   if (currentWeapon < weapons.length - 1) {
-      if (gold >= price) {
-         gold -= price;
-         currentWeapon++;
-         goldText.innerText = gold;
-         let newWeapon = weapons[currentWeapon].name;
-         text.innerText = "You now have a " + newWeapon + ".";
-         inventory.push(newWeapon);
-         text.innerText += " In your inventory you have: " + inventory;
-         price *= 2;
-      } else {
-         text.innerText = "You do not have enough gold to buy a weapon.";
-      }
-   } else {
-      text.innerText = "You already have the most powerful weapon!";
-      button2.innerText = "Sell weapon for 15 gold";
-      button2.onclick = sellWeapon;
-   }
-   button2.innerText = "Buy weapon (" + price + " gold)";
-}
 
-function sellWeapon() {
-   if (inventory.length > 1) {
-      gold += 15;
-      goldText.innerText = gold;
-      let currentWeapon = inventory.shift();
-      text.innerText = "You sold a " + currentWeapon + ".";
-      text.innerText += " In your inventory you have: " + inventory;
-   } else {
-      text.innerText = "Don't sell your only weapon!";
-   }
-}
-*/
 function equipDagger() {
  if (!boughtDagger) {
    if (gold < weapons[1].price) { text.innerText = "You don't have enough for that!"; }
@@ -776,17 +738,17 @@ function levelUp() {
    if (xp >= levelCost) {
       innerButtons.style.display = "flex";
       xp -= levelCost;
+      xp = Math.floor(xp);
       levelCost = Math.floor(levelCost * 1.2);
       playerLevel++;
-      xpText.innerText = Math.floor(xp);
+      xpText.innerText = `${xp}/${levelCost}`;
       levelingText.innerText = "Level: " + playerLevel;
       levelText.innerText = levelCost;
-      strength += Math.floor(Math.pow(7, 1+prestige/10));
-      def += Math.floor(Math.pow(5, 1+prestige/10));
-      innerUpdate(innerLocations[1]);
+      strength += 7;
+      def += 5;
+      innerUpdate(1);
       update(locations[8]);
       controls.style.display = "none";
-      //
       updateLists();
    }
    else {
@@ -803,38 +765,34 @@ function levelUpReturn() {
 }
 
 function defenseBuff() {
-   def = Math.floor(def + Math.floor(Math.pow(15, 1+(prestige/10))));
+   def += 15;
    levelUpReturn();
 }
 
 function dmgBuff() {
-   strength = Math.floor(strength + Math.floor(Math.pow(10, 1+(prestige/10))));
+   strength += 10;
    levelUpReturn();
 }
 
-function critBuff() {
-   critDmg += Math.floor(Math.pow(10, 1+(prestige/10)));
-   if (critChance >= 1) {
-      critDmg += Math.floor(Math.pow(10, 1+(prestige/10)));
-   } else {
-      critChance += .05;
-   }
+function elemBuff() {
+   // REWORK
    levelUpReturn();
 }
 
 function accBuff() {
    accuracy += .05;
-   counterChance += .05;
+   // REWORK
    levelUpReturn();
 }
 
 function speedBuff() {
    dodgeChance += .05;
+   // Additional Attacks here
    levelUpReturn();
 }
 
 function procBuff() {
-   procChance += .2 + (prestige*2);
+   procChance += .2;
    levelUpReturn();
 }
 
@@ -916,73 +874,66 @@ function goFight() {
    } else if (fighting == 5) {
       text.innerText = "A special Slime has appeared!!";
    }
-   innerButtons.style.display = "flex";
-   innerButton1.style.display= "inline";
-   innerButton1.innerText = "equip your " + weapons[currentWeapon].name;
+   innerUpdate();
+}
+
+function equipWeapon() {
+   focusImage.onclick = playerAttack;
+   text.innerText = `You ready your ${weapons[currentWeapon].name}.`;
+}
+
+function defend() {
 
 }
+
+function addFire() {
+
+}
+
+function addIce() {
+
+}
+
+function addLightning() {
+
+}
+
+function inspect() {
+
+}
+
 // REWORK FIGHTING MECHANICS
 function playerAttack() {
-      /*text.innerText = "The " + monsters[fighting].name + " attacks.";
-   if (isPlayerHit()) {
-      getMonsterAttackValue(monsters[fighting].level);
-      health -= monDmg;
-      healthText.innerText = health;
-      text.innerText += " It did " + monDmg + " damage to you.";
-   } else {
-      text.innerText += " You dodged it's attack!";
-      console.log("Monster miss. ");
-   }*/
-   text.innerText += " You attack it with your " + weapons[currentWeapon].name + ".";
-   if (isMonsterHit()) {
-      attDmg = weapons[currentWeapon].power * (1 + strength / 20);
-      console.log("Base player: " + attDmg);
-      if (isCrit()) {
-         attDmg *= (1 + critDmg / 100);
+      text.innerText = `You attack the ${monsters[fighting].name}, `;
+      if (isMonsterHit) {
+         attDmg = weapons[currentWeapon].power * (1 + strength / 20);
+         if (isCrit()) { attDmg *= (1 + critDmg / 100); }
+         attDmg = Math.floor(attDmg * (rollAtt() + .1));
+         monsterHealth -= attDmg;
+         text.innerText += `you dealt ${attDmg} damage!`;
+      } else { text.innerText += "it dodges out of the way!"; }
+      monsterHealthText.innerText = monsterHealth;
+      if (monsterHealth <= 0)
+      {
+         winGame();
       }
-      rollAtt();
-      dmgRan += .1;
-      attDmg = Math.floor(attDmg * dmgRan);
-      console.log("Ending Player: " + attDmg);
-      monsterHealth -= attDmg;
-      text.innerText += " You dealt " + attDmg + " damage to the " + monsters[fighting].name + ".";
-   } else {
-      text.innerText += " You miss.";
-      console.log("Player miss. ");
-   }
-   healthText.innerText = health;
-   monsterHealthText.innerText = monsterHealth;
-   if (health <= 0)
-   {
-      lose();
-   } else if (monsterHealth <= 0)
-   {
-      defeatMonster();
-   }
-   //setTimeout(monsterAttack, 2000);
-}
-
-function equipMain() {
-
+      focusImage.onclick = inspect;
+      setTimeout(monsterAttack, 2500);
 }
 
 function monsterAttack() {
-   text.innerText = "The " + monsters[fighting].name + " attacks.";
+   text.innerText = "The " + monsters[fighting].name + " attacks, ";
    if (isPlayerHit()) {
       getMonsterAttackValue(monsters[fighting].level);
       health -= monDmg;
-      healthText.innerText = health;
-      text.innerText += " It did " + monDmg + " damage to you.";
+      healthText.innerText = `${health}/${maxHealth}`;
+      text.innerText += `it did ${monDmg} damage to you!`;
    } else {
       text.innerText += " You dodged it's attack!";
-      console.log("Monster miss. ");
    }
    if (health <= 0)
       {
          lose();
-      } else if (monsterHealth <= 0)
-      {
-         defeatMonster();
       }
 }
 
@@ -999,66 +950,32 @@ function rollAtt() {
    dmgRan = Math.random();
    console.log(dmgRan);
    if (dmgRan < .8) {
-      console.log("AGAIN!");
       rollAtt();
    }
+   return dmgRan;
 }
 
 function getMonsterAttackValue(level) {
-   monDmg = (Math.floor(Math.pow(level, 1+(prestige/10))) * 10 - def / 10) * (1 - def / (def + 300)) - defBonus;
-   monReflectDmg = Math.floor(Math.pow(level, 1+(prestige/10))) * 10;
-   rollAtt();
-   dmgRan += .1;
+   monDmg = (level * 10 - def / 10) * (1 - def / (def + 300)) - defBonus;
+   monReflectDmg = Math.floor(level) * 10;
    if (Math.random() > .9) { dmgRan *= 2; }
-   monDmg = Math.floor(monDmg * dmgRan);
-   monReflectDmg = Math.floor(monReflectDmg * dmgRan);
-   console.log("Monster Attack: " + monDmg);
+   monDmg = Math.floor(monDmg * rollAtt());
    if (monDmg < 0) {
       monDmg = 0;
    }
 }
 
 function isMonsterHit() {
-   return Math.random() < accuracy || health < 25;
+   return Math.random() < accuracy || health <= (maxHealth / 5);
 }
 
 function isPlayerHit() {
    return Math.random() > dodgeChance;
 }
 
-function counterAttack() {
-   // REWORK ALL OF THIS
-   text.innerText = "You attempt to counter the " + monsters[fighting].name + "'s attack.";
-   if (Math.random() < counterChance)
-   {
-      text.innerText += " You successfully counter it!";
-      getMonsterAttackValue(monsters[fighting].level);
-      monReflectDmg = Math.floor(monReflectDmg/3);
-      attDmg = Math.floor(monReflectDmg*counterDmg);
-      attDmg = Math.floor(attDmg*(weapons[currentWeapon].power / 3));
-      health -= Math.floor(monDmg/3);
-      healthText.innerText = health;
-      monsterHealth -= attDmg;
-      monsterHealthText.innerText = monsterHealth;
-      text.innerText += " You deal " + attDmg + " damage to it and take " + Math.floor(monDmg/3) + " damage back.";
-   } else {
-      text.innerText += "You fail to counter the attack!"
-         getMonsterAttackValue(monsters[fighting].level);
-         health -= Math.floor(monDmg/2);
-         healthText.innerText = health;
-         text.innerText += " It did " + Math.floor(monDmg/2) + " damage to you.";
-   }
-   if (health <= 0) {
-      lose();
-   } else if (monsterHealth <= 0) {
-      defeatMonster();
-   }
-}
-
 function defeatMonster() {
    // Change focus to be money after kill
    focusMenu.style.display = "none";
-   button3.style.display = "none";
    button4.style.display = "inline";
    if (fighting == 5) {
       xp += 50 * xpBonus;
@@ -1080,8 +997,9 @@ function defeatMonster() {
    fightingBoss = false;
    health += leech;
    goldText.innerText = Math.floor(gold);
-   xpText.innerText = Math.floor(xp);
-   healthText.innerText = health;
+   xp = Math.floor(xp);
+   xpText.innerText = `${xp}/${levelCost}`;
+   healthText.innerText = `${health}/${maxHealth}`;
 }
 
 function lose() {
@@ -1091,8 +1009,6 @@ function lose() {
 
 function winGame() {
    focusMenu.style.display = "none";
-   prestigeUnlock = true;
-   button3.style.display = "inline";
    update(locations[6]);
    if (finalBoss)
    {
@@ -1100,42 +1016,6 @@ function winGame() {
    } else {
       text.innerText = "You've defeated the phantom, but it will return... You can't run forever...";
    }
-}
-
-function playerPrestige() {
-   xp = 0;
-   health = 200;
-   gold = 50;
-   currentWeapon = 0;
-   price = 250;
-   levelCost = 5;
-   playerLevel = 1;
-   strength = 0;
-   def = 0;
-   critDmg = 100;
-   critChance = 0.1;
-   counterDmg = 1;
-   counterChance = .3
-   monMod = 1;
-   goldMult = 1;
-   dodgeChance = 0.1;
-   accuracy = 0.8;
-   floor = 1;
-   bossOne = true;
-   bossTwo = true;
-   finalBoss = true;
-   fightingBoss = false;
-   prestige++;
-
-   button4.style.display = "inline";
-
-   healthText.innerText = health;
-   xpText.innerText = xp;
-   goldText.innerText = gold;
-   levelText.innerText = levelCost;
-   levelingText.innerText = "Level: " + playerLevel;
-   prestigeText.innerText = "Prestige: " + prestige;
-   goTown();
 }
 
 function restart() {
@@ -1150,28 +1030,23 @@ function restart() {
    def = 0;
    critDmg = 100;
    critChance = 0.1;
-   counterDmg = 1;
-   counterChance = .3
    monMod = 1;
    goldMult = 1;
    dodgeChance = 0.1;
    accuracy = 0.8;
    floor = 1;
-   prestige = 0;
    bossOne = true;
    bossTwo = true;
    finalBoss = true;
    fightingBoss = false;
-   prestigeUnlock = false;
 
    button4.style.display = "inline";
 
    healthText.innerText = health;
-   xpText.innerText = xp;
+   xpText.innerText = `${xp}/${levelCost}`;
    goldText.innerText = gold;
    levelText.innerText = levelCost;
    levelingText.innerText = "Level: " + playerLevel;
-   prestigeText.innerText = "Prestige: " + prestige;
    goTown();
 }
 
