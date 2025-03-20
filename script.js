@@ -31,14 +31,13 @@ let boughtSword = false;
 let boughtScimitars = false;
 let boughtGreatsword = false;
 let gambleNum;
-let monsterHealth;
-let fighting;
-let monsterDif;
-let monDmg;
-let dmgRan;
-let attDmg;
-let whatItem;
-let monReflectDmg;
+let monsterHealth = 0;
+let fighting = 0;
+let monsterDif = "";
+let monDmg = 0;
+let dmgRan = 0;
+let attDmg = 0;
+let whatItem = 0;
 /*                                    Other Notes:
 Level Bonuses:
 Crit damage increase
@@ -136,14 +135,11 @@ const bloodPenDesc = document.querySelector("#bloodPenDesc");
 const dwarfCharmCount = document.querySelector("#dwarfCharmCount");
 const dwarfCharmDesc = document.querySelector("#dwarfCharmDesc");
 
-
 // Initializing Menu
 xpText.innerText = `${xp}/${levelCost}`;
 healthText.innerText = `${health}/${maxHealth}`;
 goldText.innerText = gold;
-levelText.innerText = levelCost;
 focusMenu.style.display = "none";
-
 // WEAPONS
 const weapons = [
    { name: 'stick', power: 2, chance: 1, speed: 3, price: 0},
@@ -153,12 +149,7 @@ const weapons = [
    { name: 'scimitars', power: 12, chance: 6, speed: 4, price: 2000 },
    { name: 'greatsword', power: 64, chance: 16, speed: 1, price: 2000 }
 ];
-/*
-const specialWeapons = [
-   make weapons :3
-
-]
-*/
+//controls.style.display = "none"; V
 // MONSTERS
 const monsters = [
    {
@@ -287,7 +278,8 @@ const monsters = [
       difficulty: "Good Luck",
       image: ""
    }
-]
+];
+//controls.style.display = "none"; V
 // LOCATIONS
 const locations = [
    {
@@ -314,22 +306,22 @@ const locations = [
    {
       // 3
       name: "fight",
-      "button text": ["", "", ""],
-      "button functions": [null, null, null],
+      "button text": ["Run!", "", ""],
+      "button functions": [goFloor, null, null],
       text: "You approach the nearest monster."
    },
    {
       // 4
       name: "kill monster",
-      "button text": ["Go to town square", "Continue on this floor", "Go to town square"],
-      "button functions": [goTown, goFloor, goTown],
+      "button text": ["Go to town square", "Continue on this floor", ""],
+      "button functions": [goTown, goFloor, null],
       text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
    },
    {
       // 5
       name: "lose",
-      "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
-      "button functions": [restart, restart, restart],
+      "button text": ["REPLAY?", "", ""],
+      "button functions": [restart, null, null],
       text: "You die. &#x2620;"
    },
    {
@@ -356,8 +348,8 @@ const locations = [
    {
       // 9
       name: "item store",
-      "button text": ["Go to town square", "Go to town square", "Go to town square"],
-      "button functions": [goTown, goTown, goTown],
+      "button text": ["Go to town square", "", ""],
+      "button functions": [goTown, null, null],
       text: "Choose a rare item to buy."
    },
    {
@@ -375,7 +367,6 @@ const locations = [
       text: "Come back later for more!"
    }
 ];
-// problem
 const innerLocations = [
    {
       // 0
@@ -387,21 +378,20 @@ const innerLocations = [
    {
       // 1
       name: "inner level up",
-      text: [("Strength: " + strength + " -> " + strength + 10),
+      text: [("Strength: " + strength + " -> " + (strength + 10)),
          ("Defense: " + def + " -> " + (def + 10)),
-         ("Rework"), "", "", ""],
+         ("Rework"), "e", "e", "e"],
       functions: [dmgBuff, defenseBuff, elemBuff, accBuff, speedBuff, procBuff],
       background: "lightblue"
    },
    {
       // 2
-      name: "fight",
-      text: [`Equip your ${currentWeapon}`, "Defend", "", "Imbue your weapon with fire", "Imbue your weapon with ice", "imbue your weapon with lightning"],
+      name: "inner fight",
+      text: [`Equip your ${weapons[currentWeapon].name}`, "Defend", "e", "Imbue your weapon with fire", "Imbue your weapon with ice", "imbue your weapon with lightning"],
       functions: [equipWeapon, defend, null, addFire, addIce, addLightning],
       background: "#ef8011"
    }
 ];
-
 // initialize buttons
 button1.onclick = goStore;
 button2.onclick = goDung;
@@ -444,7 +434,7 @@ function update(location) {
    if (button3.innerText == "") { button3.style.display = "none"; } else { button3.style.display = "inline"; }
    updateLists();
 }
-
+//controls.style.display = "none"; ^
 function innerUpdate(num) {
    innerButtons.style.display = "flex";
    innerButton1.innerText = innerLocations[num].text[0];
@@ -520,7 +510,7 @@ function updateLists() {
    dwarfCharmCount.innerText = items[4].count;
    dwarfCharmDesc.innerText = items[4].effect;
 }
-
+//controls.style.display = "none"; ^
 function viewItems() {
    updateLists();
    itemList.style.display = "block";
@@ -546,11 +536,6 @@ function goTown() {
 function goStore() {
    update(locations[1]);
    innerUpdate(0);
-
-   if (currentWeapon < weapons.length - 1) {
-      button2.innerText = "Buy weapon (" + price + " gold)";
-   }
-   innerButtons.style.display = "flex";
 }
 
 function goDung() {
@@ -646,7 +631,6 @@ function chanceItem() {
       updateLists();
    }
 }
-
 function buyHealth() {
    if (gold >= 10) {
       gold -= 10;
@@ -874,7 +858,7 @@ function goFight() {
    } else if (fighting == 5) {
       text.innerText = "A special Slime has appeared!!";
    }
-   innerUpdate();
+   innerUpdate(2);
 }
 
 function equipWeapon() {
@@ -883,7 +867,8 @@ function equipWeapon() {
 }
 
 function defend() {
-
+   text.innerText = `You ready yourself for the ${monsters[fighting].name}'s attack`;
+   setTimeout(monsterAttack, 2500);
 }
 
 function addFire() {
@@ -902,13 +887,14 @@ function inspect() {
 
 }
 
-// REWORK FIGHTING MECHANICS
 function playerAttack() {
       text.innerText = `You attack the ${monsters[fighting].name}, `;
       if (isMonsterHit) {
          attDmg = weapons[currentWeapon].power * (1 + strength / 20);
          if (isCrit()) { attDmg *= (1 + critDmg / 100); }
-         attDmg = Math.floor(attDmg * (rollAtt() + .1));
+         rollAtt();
+         dmgRan += .1;
+         attDmg = Math.floor(attDmg * dmgRan);
          monsterHealth -= attDmg;
          text.innerText += `you dealt ${attDmg} damage!`;
       } else { text.innerText += "it dodges out of the way!"; }
@@ -945,21 +931,20 @@ function isCrit() {
       return false;
    }
 }
-
+// check if this breaks
 function rollAtt() {
    dmgRan = Math.random();
    console.log(dmgRan);
    if (dmgRan < .8) {
       rollAtt();
    }
-   return dmgRan;
+   dmgRan += .1;
 }
 
 function getMonsterAttackValue(level) {
    monDmg = (level * 10 - def / 10) * (1 - def / (def + 300)) - defBonus;
-   monReflectDmg = Math.floor(level) * 10;
    if (Math.random() > .9) { dmgRan *= 2; }
-   monDmg = Math.floor(monDmg * rollAtt());
+   monDmg = Math.floor(monDmg * dmgRan);
    if (monDmg < 0) {
       monDmg = 0;
    }
@@ -1023,7 +1008,6 @@ function restart() {
    health = 200;
    gold = 50;
    currentWeapon = 0;
-   price = 250;
    levelCost = 5;
    playerLevel = 1;
    strength = 0;
