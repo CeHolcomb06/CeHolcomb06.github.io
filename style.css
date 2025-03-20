@@ -19,10 +19,11 @@ body {
 
 #controls,
 #stats {
+ display: flex;
  border: 1px solid #0a0a23;
  padding: 5px;
  color: #0a0a23;
-
+ justify-content: center;
 }
 
 #statList {
@@ -47,12 +48,24 @@ body {
  background-color: #c70d0d;
 }
 
+#focusMenu {
+  display: flex;
+  justify-content: center;
+  background-color: #0a0a23;
+}
+
+#focusImage {
+  cursor: pointer;
+}
+
 #innerButtons {
   display: none;
   border: 1px solid #0a0a23;
   padding: 5px;
   color: black;
   background-color: lightblue;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
 }
 
 #innerButton1, #innerButton2, #innerButton3, #innerButton4, #innerButton5, #innerButton6 {
@@ -66,12 +79,6 @@ body {
   color: #0a0a23;
   background-image: linear-gradient(lightblue, pink);
   border: 2px solid #e695ea;
-}
-
-#prestige {
-  color: #0a0a23;
-  border: 3px solid #9900ff;
-  background-image: linear-gradient(lightblue, #a53dff);
 }
 
 #itemShow {
