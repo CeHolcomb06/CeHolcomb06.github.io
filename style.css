@@ -9,21 +9,28 @@ body {
 }
 
 #mainGame {
- max-width: 750px;
- max-height: 500px;
+ max-width: 900px;
+ max-height: 800px;
  background-color: #ffffff;
  color: #ffffff;
  margin: 30px auto 0px;
  padding: 10px;
 }
 
-#controls,
 #stats {
  display: flex;
  border: 1px solid #0a0a23;
  padding: 5px;
  color: #0a0a23;
  justify-content: center;
+}
+
+#controls {
+  display: flex;
+  border: 1px solid #0a0a23;
+  padding: 5px;
+  color: #0a0a23;
+  justify-content: center;
 }
 
 #statList {
@@ -64,7 +71,7 @@ body {
   padding: 5px;
   color: black;
   background-color: lightblue;
-  justify-content: space-evenly;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
@@ -73,6 +80,7 @@ body {
   color: #0a0a23;
   background-image: linear-gradient(lightblue, #ffac33);
   border: 3px solid #feac32;
+  margin: 3px;
 }
 
 #levelingText {
@@ -97,6 +105,7 @@ body {
  color: #0a0a23;
  background-image: linear-gradient(#fecc4c, #ffac33);
  border: 3px solid #feac32;
+ margin: 3px;
 }
 
 #button4 {
@@ -104,11 +113,13 @@ body {
    color: #0a0a23;
    background-image: linear-gradient(lightblue, #ffac33);
    border: 3px solid #feac32;
+   margin: 3px;
 }
 
 #statShow {
   cursor: pointer;
   color: #0a0a23;
-  background-image: linear-gradient(lightblue, pink);
+  background-image: linear-gradient(#ffac33, pink);
   border: 3px solid #feac32;
+  margin: 3px;
 }
