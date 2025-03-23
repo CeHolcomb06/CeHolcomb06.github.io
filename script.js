@@ -175,14 +175,14 @@ goldText.innerText = gold;
 focusMenu.style.display = "none";
 // WEAPONS
 const weapons = [
-   { name: 'stick', power: 2, chance: 1, speed: 3, price: 0},
-   { name: 'dagger', power: 5, chance: 3, speed: 2, price: 300 },
-   { name: 'axe', power: 12, chance: 4, speed: 1, price: 300 },
-   { name: 'sword', power: 16, chance: 5, speed: 2, price: 1000 },
-   { name: 'scimitars', power: 12, chance: 6, speed: 4, price: 2000 },
-   { name: 'greatsword', power: 64, chance: 16, speed: 1, price: 2000 }
+   { name: 'stick', power: 2, buildup: 1, speed: 3, price: 0},
+   { name: 'dagger', power: 5, buildup: 3, speed: 2, price: 300 },
+   { name: 'axe', power: 12, buildup: 4, speed: 1, price: 300 },
+   { name: 'sword', power: 16, buildup: 5, speed: 2, price: 1000 },
+   { name: 'scimitars', power: 12, buildup: 6, speed: 4, price: 2000 },
+   { name: 'greatsword', power: 64, buildup: 16, speed: 1, price: 2000 }
 ];
-//controls.style.display = "none"; V
+
 // MONSTERS
 const monsters = [
    {
@@ -199,7 +199,7 @@ const monsters = [
       // 1
       name: "Tusked Boar",
       level: 3,
-      health: 25,
+      health: 45,
       difficulty: "Hard",
       image: "images/boar.jpeg"
    },
@@ -208,7 +208,7 @@ const monsters = [
       // 2
       name: "Large Tusked Boar",
       level: 5,
-      health: 90,
+      health: 80,
       difficulty: "First Boss",
       image: "images/largeBoar.jpeg"
    },
@@ -217,7 +217,7 @@ const monsters = [
       // 3
       name: "Giant Beetle",
       level: 2,
-      health: 15,
+      health: 25,
       difficulty: "Medium",
       image: "images/bug.jpeg"
    },
@@ -226,7 +226,7 @@ const monsters = [
       // 4
       name: "Flower Mimic",
       level: 4,
-      health: 125,
+      health: 100,
       difficulty: "Easy",
       image: "images/flower.png"
    },
@@ -244,7 +244,7 @@ const monsters = [
       // 6
       name: "Small Stone Golem",
       level: 6,
-      health: 270,
+      health: 170,
       difficulty: "Medium",
       image: "images/smallStoneGolem.jpeg"
    },
@@ -253,7 +253,7 @@ const monsters = [
       // 7
       name: "Massive Bearded Dragon",
       level: 10,
-      health: 360,
+      health: 280,
       difficulty: "Second Boss",
       image: "images/giantBeardedDragon.jpeg"
    },
@@ -262,7 +262,7 @@ const monsters = [
       // 8
       name: "Insane Adventurer",
       level: 8,
-      health: 230,
+      health: 135,
       difficulty: "Hard",
       image: "images/insaneMan.jpeg"
    },
@@ -271,7 +271,7 @@ const monsters = [
       // 9
       name: "Fire Elemental",
       level: 11,
-      health: 380,
+      health: 240,
       difficulty: "Easy",
       image: "images/fireElemental.jpeg"
    },
@@ -280,7 +280,7 @@ const monsters = [
       // 10
       name: "Large Stone Golem",
       level: 13,
-      health: 700,
+      health: 500,
       difficulty: "Medium",
       image: "images/largeStoneGolem.jpeg"
    },
@@ -289,7 +289,7 @@ const monsters = [
       // 11
       name: "Lava Lizard",
       level: 15,
-      health: 550,
+      health: 430,
       difficulty: "Hard",
       image: "images/lavaLizard.jpeg"
    },
@@ -298,7 +298,7 @@ const monsters = [
       // 12
       name: "Red Dragon",
       level: 20,
-      health: 1750,
+      health: 1250,
       difficulty: "FINAL BOSS",
       image: "images/redDragon.jpeg"
    },
@@ -307,7 +307,7 @@ const monsters = [
       // 13
       name: "The Ghost of Red Dragon",
       level: 30,
-      health: 3500,
+      health: 2750,
       difficulty: "Good Luck",
       image: "images/redPhantom.jpeg"
    }
@@ -404,16 +404,16 @@ const innerLocations = [
    {
       // 0
       name: "inner store",
-      text: [`buy food for 10 gold (${foodRegen} health)`, `buy a dagger (${weapons[1].price} gold)`, `buy an axe (${weapons[2].price} gold)`, `buy a sword (${weapons[3].price} gold)`, `buy scimitars (${weapons[4].price} gold)`, `buy a greatsword (${weapons[5].price} gold)`],
+      text: [`buy food for ${foodRegen} health (10 gold)`, `buy a dagger (${weapons[1].price} gold)`, `buy an axe (${weapons[2].price} gold)`, `buy a sword (${weapons[3].price} gold)`, `buy scimitars (${weapons[4].price} gold)`, `buy a greatsword (${weapons[5].price} gold)`],
       functions: [buyHealth, equipDagger, equipAxe, equipSword, equipScimitars, equipGreatsword],
       background: "lightblue"
    },
    {
       // 1
       name: "inner level up",
-      text: ["Strength +10",
-         "Defense +15, Max Health +50",
-         "Elemental Damage +10%", "Dodge Chance +5%, Extra Attack Chance +10%", "", ""],
+      text: ["Strength +3",
+         "Defense +3, Max Health +50",
+         "Elemental Damage +10%", "Dodge Chance +5%, Extra Attack Chance +5%", "", ""],
       functions: [dmgBuff, defenseBuff, elemBuff, speedBuff, null, null],
       background: "lightblue"
    },
@@ -479,7 +479,7 @@ function innerUpdate(num) {
    innerButtons.style.backgroundColor = innerLocations[num].background;
 
    if (num == 0) {
-      innerButton1.innerText = `buy food for 10 gold (${foodRegen} health)`;
+      innerButton1.innerText = `buy food for ${foodRegen} health (10 gold)`;
       if (boughtDagger) {
          innerButton2.innerText = "equip the dagger";
       }
@@ -501,6 +501,10 @@ function innerUpdate(num) {
    {
       if (dodgeChance > .35) { innerButton4.innerText = "Extra Attack Chance +10%"; }
       if (bossOne) { innerButton3.innerText = ""; }
+   }
+
+   if (num == 2) {
+      innerButton1.innerText = `ready your ${weapons[currentWeapon].name}`;
    }
 
    if (num == 2 && bossOne)
@@ -725,13 +729,14 @@ function equipDagger() {
    else {
       boughtDagger = true;
       innerUpdate(0);
-      text.innerText = "You bought the dagger!";
       currentWeapon = 1;
+      text.innerText = `You bought the ${weapons[currentWeapon].name}! (and equipped it)`;
       gold -= weapons[1].price;
       goldText.innerText = gold;
    }
  } else {
    currentWeapon = 1;
+   text.innerText = `You equip the ${weapons[currentWeapon].name}`;
  }
 }
 
@@ -741,13 +746,14 @@ function equipAxe() {
       else {
          boughtAxe = true;
          innerUpdate(0);
-         text.innerText = "You bought the Axe!";
          currentWeapon = 2;
+         text.innerText = `You bought the ${weapons[currentWeapon].name}! (and equipped it)`;
          gold -= weapons[2].price;
          goldText.innerText = gold;
       }
     } else {
       currentWeapon = 2;
+      text.innerText = `You equip the ${weapons[currentWeapon].name}`;
     }
 }
 
@@ -757,13 +763,14 @@ function equipSword() {
       else {
          boughtSword = true;
          innerUpdate(0);
-         text.innerText = "You bought the sword!";
          currentWeapon = 3;
+         text.innerText = `You bought the ${weapons[currentWeapon].name}! (and equipped it)`;
          gold -= weapons[3].price;
          goldText.innerText = gold;
       }
     } else {
       currentWeapon = 3;
+      text.innerText = `You equip the ${weapons[currentWeapon].name}`;
     }
 }
 
@@ -773,13 +780,14 @@ function equipScimitars() {
       else {
          boughtScimitars = true;
          innerUpdate(0);
-         text.innerText = "You bought the scimitars!";
          currentWeapon = 4;
+         text.innerText = `You bought the ${weapons[currentWeapon].name}! (and equipped it)`;
          gold -= weapons[4].price;
          goldText.innerText = gold;
       }
     } else {
       currentWeapon = 4;
+      text.innerText = `You equip the ${weapons[currentWeapon].name}`;
     }
 }
 
@@ -789,13 +797,14 @@ function equipGreatsword() {
       else {
          boughtGreatsword = true;
          innerUpdate(0);
-         text.innerText = "You bought the greatsword!";
          currentWeapon = 5;
+         text.innerText = `You bought the ${weapons[currentWeapon].name}! (and equipped it)`;
          gold -= weapons[5].price;
          goldText.innerText = gold;
       }
     } else {
       currentWeapon = 5;
+      text.innerText = `You equip the ${weapons[currentWeapon].name}`;
     }
 }
 
@@ -807,8 +816,8 @@ function levelUp() {
       playerLevel++;
       xpText.innerText = `${xp}/${levelCost}`;
       levelingText.innerText = "Level: " + playerLevel;
-      strength += 7;
-      def += 5;
+      strength += 3;
+      def += 3;
       update(locations[8]);
       innerUpdate(1);
       controls.style.display = "none";
@@ -828,14 +837,14 @@ function levelUpReturn() {
 }
 
 function defenseBuff() {
-   def += 15;
+   def += 3;
    maxHealth += 50;
    healthText.innerText = `${health}/${maxHealth}`;
    levelUpReturn();
 }
 
 function dmgBuff() {
-   strength += 10;
+   strength += 3;
    levelUpReturn();
 }
 
@@ -846,7 +855,7 @@ function elemBuff() {
 
 function speedBuff() {
    if (dodgeChance <= .35) { dodgeChance += .05; }
-   addAttChance += .04;
+   addAttChance += .05;
    levelUpReturn();
 }
 
@@ -948,6 +957,8 @@ function addPoison() {
    ice = false;
    fire = false;
    text.innerText = "You imbue your weapon with deadly poison!";
+   innerButtonAnnulment();
+   setTimeout(monsterAttack, 2000);
 }
 
 function addFire() {
@@ -956,6 +967,8 @@ function addFire() {
    ice = false;
    poison = false;
    text.innerText = "You imbue your weapon with raging fire!";
+   innerButtonAnnulment();
+   setTimeout(monsterAttack, 2000);
 }
 
 function addIce() {
@@ -964,6 +977,8 @@ function addIce() {
    lightning = false;
    poison = false;
    text.innerText = "You imbue your weapon with petrifying ice!";
+   innerButtonAnnulment();
+   setTimeout(monsterAttack, 2000);
 }
 
 function addLightning() {
@@ -972,17 +987,30 @@ function addLightning() {
    ice = false;
    poison = false;
    text.innerText = "You imbue your weapon with sparking lightning!";
+   innerButtonAnnulment();
+   setTimeout(monsterAttack, 2000);
 }
 
 function inspect() {
 
 }
 
+function innerButtonAnnulment() {
+   focusImage.onclick = null;
+   innerButton1.onclick = null;
+   innerButton2.onclick = null;
+   innerButton3.onclick = null;
+   innerButton4.onclick = null;
+   innerButton5.onclick = null;
+   innerButton6.onclick = null;
+}
+
 function playerAttack() {
       text.innerText = `You attack the ${monsters[fighting].name}, `;
+      innerButtonAnnulment();
       numAttacks = weapons[currentWeapon].speed;
-      if (Math.random() < addAttChance) {
-         numAttacks += Math.floor(Math.random() * weapons[currentWeapon].speed * 1.1);
+      if (Math.random() < addAttChance * weapons[currentWeapon].speed) {
+         numAttacks += Math.floor(1 + Math.random() * weapons[currentWeapon].speed / 2);
       }
       text.innerText += ` you attack ${numAttacks} times!`;
       totalDmg = 0;
@@ -995,18 +1023,18 @@ function playerAttack() {
             attDmg = Math.floor(attDmg * dmgRan);
             if (lightning) {
                attDmg *= Math.floor((1 + lightningDmgBonus + jolt) * elementalDmgBuff * lightningItemBuff);
-               jolt += .1 * lightningItemBuff;
+               jolt += .1 * lightningItemBuff * weapons[currentWeapon].buildup;
             }
             if (ice) {
                attDmg *= Math.floor((1 + iceDmgBonus) * elementalDmgBuff * iceItemBuff);
-               frost = Math.floor((attDmg*iceDmgBonus) * frostMult * iceItemBuff);
+               frost = Math.floor((attDmg*iceDmgBonus) * frostMult * iceItemBuff * weapons[currentWeapon].buildup);
             }
             if (fire) {
-               attDmg *= Math.floor((1 + fireDmgBonus) * fireItemBuff);
+               attDmg *= Math.floor((1 + fireDmgBonus) * elementalDmgBuff * fireItemBuff);
                fire = false;
             }
             if (poison) {
-               poisonDmg += Math.floor(attDmg/3 * poisonItemBuff);
+               poisonDmg += Math.floor(attDmg/2 * poisonItemBuff * weapons[currentWeapon].buildup);
                poisoned = true;
             }
             monsterHealth -= attDmg;
@@ -1046,6 +1074,7 @@ function monsterAttack() {
          poisonDmg = 0;
          text.innerText += ` It's no longer poisoned.`;
       }
+      monsterHealthText.innerText = monsterHealth;
    }
    if (health <= 0)
       {
@@ -1146,10 +1175,11 @@ function winGame() {
 
 function restart() {
    xp = 0;
-   health = 200;
+   levelCost = 5;
+   maxHealth = 200;
+   health = maxHealth;
    gold = 50;
    currentWeapon = 0;
-   levelCost = 5;
    playerLevel = 1;
    strength = 0;
    def = 0;
@@ -1159,19 +1189,65 @@ function restart() {
    goldMult = 1;
    dodgeChance = 0.1;
    floor = 1;
+   procChance = .2;
+   foodRegen = 10;
+   addAttChance = .1;
+   elementalDmgBuff = 1;
+   lightningDmgBonus = .1;
+   iceDmgBonus = .2;
+   fireDmgBonus = .4;
+   frostMult = 1;
+   xpBonus = 1;
+   goldBonus = 1;
+   lightningItemBuff = 1;
+   iceItemBuff = 1;
+   fireItemBuff = 1;
+   poisonItemBuff = 1;
+   poison = false;
+   defending = false;
+   lightning = false;
+   ice = false;
+   fire = false;
    bossOne = true;
    bossTwo = true;
    finalBoss = true;
    fightingBoss = false;
+   procUnlock = false;
+   itemUnlock = false;
+   floor2Shop = false;
+   boughtDagger = false;
+   boughtAxe = false;
+   boughtSword = false;
+   boughtScimitars = false;
+   boughtGreatsword = false;
+   poisoned = false;
+   defBonus = 0;
+   leech = 0;
+   poisonDmg = 0;
+   jolt = 0;
+   frost = 0;
+   lightningDmg = 0;
+   iceDmg = 0;
+   fireDmg = 0;
+   totalDmg = 0;
+   numAttacks = 0;
+   gambleNum = 0;
+   monsterHealth = 0;
+   fighting = 0;
+   monsterDif = "";
+   monDmg = 0;
+   dmgRan = 0;
+   attDmg = 0;
+   whatItem = 0;
 
    button4.style.display = "inline";
 
-   healthText.innerText = health;
+   healthText.innerText = `${health}/${maxHealth}`;
    xpText.innerText = `${xp}/${levelCost}`;
    goldText.innerText = gold;
-   levelText.innerText = levelCost;
    levelingText.innerText = "Level: " + playerLevel;
    goTown();
+   text.innerText = "Welcome to Dungeon Defeater! The town has been experiencing monster attacks leaking out of the dungeon. The town's defenses are crumbling! Go in and take the fight to the source of the trouble!";
 }
 
 function easterEgg() {
