@@ -151,6 +151,7 @@ const featherCount = document.querySelector("#featherCount");
 const featherDesc = document.querySelector("#featherDesc");
 const hydraTeethCount = document.querySelector("#hydraTeethCount");
 const hydraTeethDesc = document.querySelector("#hydraTeethDesc");
+
 // Initializing Menu
 xpText.innerText = `${xp}/${levelCost}`;
 healthText.innerText = `${health}/${maxHealth}`;
@@ -164,7 +165,7 @@ const weapons = [
    { name: 'axe', power: 12, buildup: 4, speed: 1, upgrade: 0, price: 150 },
    { name: 'quarterstaff', power: 16, buildup: 5, speed: 2, upgrade: 0, price: 750 },
    { name: 'sword', power: 40, buildup: 8, speed: 1, upgrade: 0, price: 750 },
-   { name: 'scimitars', power: 12, buildup: 6, speed: 4, upgrade: 0, price: 2000 }
+   { name: 'scimitars', power: 12, buildup: 6, speed: 4, upgrade: 0, price: 2000 },
    { name: 'greatsword', power: 64, buildup: 16, speed: 1, upgrade: 0, price: 2000 }
 ];
 
@@ -573,6 +574,10 @@ function goDung() {
 }
 
 function goFloor() {
+   lightning = false;
+   fire = false;
+   ice = false;
+   poison = false;
    button4.style.display = "inline";
    focusMenu.style.display = "none";
    fightingBoss = false;
@@ -983,7 +988,8 @@ function switchWeapon() {
    } else {
       quick = true;
    }
-   text.innerText = ``;
+   innerUpdate(2);
+   text.innerText = `You have swapped to your ${weapons[currentWeapon].name}`;
    // pin
 }
 
@@ -1023,10 +1029,6 @@ function addLightning() {
    ice = false;
    poison = false;
    text.innerText = "You imbue your weapon with sparking lightning!";
-}
-
-function inspect() {
-
 }
 
 function innerButtonAnnulment() {
@@ -1080,7 +1082,6 @@ function playerAttack() {
       }
       text.innerText += `(${totalDmg} total)`;
       monsterHealthText.innerText = monsterHealth;
-      innerButton1.onclick = null;
       if (monsterHealth <= 0)
       {
          defeatMonster();
@@ -1112,7 +1113,10 @@ function monsterAttack() {
    if (health <= 0)
       {
          lose();
-      } else if (monsterHealth <= 0) { defeatMonster(); } else { innerUpdate(2); }
+      } else if (monsterHealth <= 0) { defeatMonster(); } else {
+         innerUpdate(2);
+         focusImage.onclick = playerAttack;
+      }
 }
 
 function isCrit(entity) {
@@ -1202,10 +1206,11 @@ function winGame() {
 function restart() {
    xp = 0;
    levelCost = 5;
-   maxHealth = 200;
+   maxHealth = 100;
    health = maxHealth;
    gold = 50;
    currentWeapon = 0;
+   alternateWeapon = 1;
    playerLevel = 1;
    strength = 0;
    def = 0;
@@ -1241,12 +1246,14 @@ function restart() {
    procUnlock = false;
    itemUnlock = false;
    floor2Shop = false;
-   boughtDagger = false;
-   boughtAxe = false;
+   boughtSeconds = false;
+   boughtQuarter = false;
    boughtSword = false;
    boughtScimitars = false;
    boughtGreatsword = false;
    poisoned = false;
+   quick = true;
+   storage = 0;
    defBonus = 0;
    leech = 0;
    poisonDmg = 0;
