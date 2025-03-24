@@ -390,7 +390,7 @@ const innerLocations = [
    {
       // 0
       name: "inner store",
-      text: [`buy food for ${foodRegen} health (10 gold)`, `buy a dagger and axe(${weapons[1].price} gold)`, `buy a quarterstaff (${weapons[3].price} gold)`, `buy a sword (${weapons[4].price} gold)`, `buy scimitars (${weapons[5].price} gold)`, `buy a greatsword (${weapons[6].price} gold)`],
+      text: [`buy food for ${foodRegen} health (10 gold)`, `buy a dagger and axe (${weapons[2].price} gold)`, `buy a quarterstaff (${weapons[4].price} gold)`, `buy a sword (${weapons[5].price} gold)`, `buy scimitars (${weapons[6].price} gold)`, `buy a greatsword (${weapons[7].price} gold)`],
       functions: [buyHealth, equipSeconds, equipQuarter, equipSword, equipScimitars, equipGreatsword],
       background: "lightblue"
    },
@@ -467,21 +467,11 @@ function innerUpdate(num) {
 
    if (num == 0) {
       innerButton1.innerText = `buy food for ${foodRegen} health (10 gold)`;
-      if (boughtSeconds) {
-         innerButton2.innerText = "upgrade the dagger and axe";
-      }
-      if (boughtQuarter) {
-         innerButton3.innerText = "upgrade the quarterstaff";
-      }
-      if (boughtSword) {
-         innerButton4.innerText = "upgrade the sword";
-      }
-      if (boughtScimitars) {
-         innerButton5.innerText = "upgrade the scimitars";
-      }
-      if (boughtGreatsword) {
-         innerButton6.innerText = "upgrade the greatsword";
-      }
+      if (boughtSeconds) { innerButton2.innerText = `upgrade your axe and dagger (${weapons[2].price} gold)`; }
+      if (boughtQuarter) { innerButton3.innerText = `upgrade your quarterstaff (${weapons[4].price} gold)`; }
+      if (boughtSword) { innerButton4.innerText = `upgrade your Sword (${weapons[5].price} gold)`; }
+      if (boughtScimitars) { innerButton5.innerText = `upgrade your scimitars (${weapons[6].price} gold)`; }
+      if (boughtGreatsword) { innerButton6.innerText = `upgrade your greatsword (${weapons[7].price} gold)`; }
    }
 
    if (num == 1)
@@ -727,6 +717,8 @@ function equipSeconds() {
    }
  } else {
    if (gold < weapons[2].price) { text.innerText = "You don't have enough for that!"; } else {
+      gold -= weapons[2].price;
+      goldText.innerText = gold;
       weapons[2].upgrade++;
       weapons[3].upgrade++;
       text.innerText = `You upgrade both your dagger and axe!`;
@@ -756,6 +748,8 @@ function equipQuarter() {
       }
     } else {
       if (gold < weapons[4].price) { text.innerText = "You don't have enough for that!"; } else {
+         gold -= weapons[4].price;
+         goldText.innerText = gold;
          weapons[4].upgrade++;
          text.innerText = `You upgrade your ${weapons[4].name}!`;
          weapons[4].price = Math.floor(weapons[4].price * 1.5);
@@ -783,6 +777,8 @@ function equipSword() {
       }
     } else {
       if (gold < weapons[5].price) { text.innerText = "You don't have enough for that!"; } else {
+         gold -= weapons[5].price;
+         goldText.innerText = gold;
          weapons[5].upgrade++;
          text.innerText = `You upgrade your ${weapons[5].name}!`;
          weapons[5].price = Math.floor(weapons[5].price * 1.5);
@@ -810,6 +806,8 @@ function equipScimitars() {
       }
     } else {
       if (gold < weapons[6].price) { text.innerText = "You don't have enough for that!"; } else {
+         gold -= weapons[6].price;
+         goldText.innerText = gold;
          weapons[6].upgrade++;
          text.innerText = `You upgrade your ${weapons[6].name}!`;
          weapons[6].price = Math.floor(weapons[6].price * 1.5);
@@ -837,6 +835,8 @@ function equipGreatsword() {
       }
     } else {
       if (gold < weapons[7].price) { text.innerText = "You don't have enough for that!"; } else {
+         gold -= weapons[7].price;
+         goldText.innerText = gold;
          weapons[7].upgrade++;
          text.innerText = `You upgrade your ${weapons[7].name}!`;
          weapons[7].price = Math.floor(weapons[7].price * 1.5);
@@ -1052,7 +1052,7 @@ function playerAttack() {
       totalDmg = 0;
       for (i = numAttacks; i > 0; i--) {
          if (isMonsterHit) {
-            attDmg = Math.floor(weapons[currentWeapon].power * (1 + strength / 50) * rollAtt());
+            attDmg = Math.floor((weapons[currentWeapon].power * Math.pow(1.2, weapons[currentWeapon].upgrade)) * (1 + strength / 50) * rollAtt());
             if (isCrit()) { attDmg *= (1 + critDmg / 100); }
             if (lightning) {
                attDmg = Math.floor((attDmg + 1) * (lightningDmgBonus + jolt) * elementalDmgBuff * lightningItemBuff);
