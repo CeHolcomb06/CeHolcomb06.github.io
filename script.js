@@ -18,9 +18,9 @@ let procChance = .2;
 let foodRegen = 10;
 let addAttChance = .1;
 let elementalDmgBuff = 1;
-let lightningDmgBonus = .1;
-let iceDmgBonus = .2;
-let fireDmgBonus = .4;
+let lightningDmgBonus = 1.2;
+let iceDmgBonus = 1.2;
+let fireDmgBonus = 1.4;
 let frostMult = 1;
 let xpBonus = 1;
 let goldBonus = 1;
@@ -28,10 +28,11 @@ let lightningItemBuff = 1;
 let iceItemBuff = 1;
 let fireItemBuff = 1;
 let poisonItemBuff = 1;
+let poisonDispelChance = .5;
 let poison = false;
 let defending = false;
 let lightning = false;
-let ice = true;
+let ice = false;
 let fire = false;
 let bossOne = true;
 let bossTwo = true;
@@ -61,7 +62,6 @@ let monsterHealth = 0;
 let fighting = 0;
 let monsterDif = "";
 let monDmg = 0;
-let dmgRan = 0;
 let attDmg = 0;
 let whatItem = 0;
 /*                                    Other Notes:
@@ -176,11 +176,11 @@ focusMenu.style.display = "none";
 // WEAPONS
 const weapons = [
    { name: 'stick', power: 2, buildup: 1, speed: 3, price: 0},
-   { name: 'dagger', power: 5, buildup: 3, speed: 2, price: 300 },
-   { name: 'axe', power: 12, buildup: 4, speed: 1, price: 300 },
-   { name: 'sword', power: 16, buildup: 5, speed: 2, price: 1000 },
-   { name: 'scimitars', power: 12, buildup: 6, speed: 4, price: 2000 },
-   { name: 'greatsword', power: 64, buildup: 16, speed: 1, price: 2000 }
+   { name: 'dagger', power: 5, buildup: 3, speed: 2, price: 150 },
+   { name: 'axe', power: 12, buildup: 4, speed: 1, price: 150 },
+   { name: 'sword', power: 16, buildup: 5, speed: 2, price: 600 },
+   { name: 'scimitars', power: 12, buildup: 6, speed: 4, price: 1500 },
+   { name: 'greatsword', power: 64, buildup: 16, speed: 1, price: 1500 }
 ];
 
 // MONSTERS
@@ -190,7 +190,7 @@ const monsters = [
       // 0
       name: "Slime",
       level: 1,
-      health: 10,
+      health: 25,
       difficulty: "Easy",
       image: "images/slime.jpeg"
    },
@@ -199,7 +199,7 @@ const monsters = [
       // 1
       name: "Tusked Boar",
       level: 3,
-      health: 45,
+      health: 100,
       difficulty: "Hard",
       image: "images/boar.jpeg"
    },
@@ -208,7 +208,7 @@ const monsters = [
       // 2
       name: "Large Tusked Boar",
       level: 5,
-      health: 80,
+      health: 250,
       difficulty: "First Boss",
       image: "images/largeBoar.jpeg"
    },
@@ -217,7 +217,7 @@ const monsters = [
       // 3
       name: "Giant Beetle",
       level: 2,
-      health: 25,
+      health: 55,
       difficulty: "Medium",
       image: "images/bug.jpeg"
    },
@@ -225,8 +225,8 @@ const monsters = [
       // floor 2
       // 4
       name: "Flower Mimic",
-      level: 4,
-      health: 100,
+      level: 7,
+      health: 230,
       difficulty: "Easy",
       image: "images/flower.png"
    },
@@ -235,7 +235,7 @@ const monsters = [
       // 5
       name: "Massive Slime",
       level: 10,
-      health: 1500,
+      health: 10000,
       difficulty: "Special",
       image: "images/largeSlime.jpeg"
    },
@@ -243,8 +243,8 @@ const monsters = [
       // floor 2
       // 6
       name: "Small Stone Golem",
-      level: 6,
-      health: 170,
+      level: 9,
+      health: 550,
       difficulty: "Medium",
       image: "images/smallStoneGolem.jpeg"
    },
@@ -252,8 +252,8 @@ const monsters = [
       // floor 2 boss
       // 7
       name: "Massive Bearded Dragon",
-      level: 10,
-      health: 280,
+      level: 15,
+      health: 800,
       difficulty: "Second Boss",
       image: "images/giantBeardedDragon.jpeg"
    },
@@ -261,8 +261,8 @@ const monsters = [
       // floor 2
       // 8
       name: "Insane Adventurer",
-      level: 8,
-      health: 135,
+      level: 12,
+      health: 400,
       difficulty: "Hard",
       image: "images/insaneMan.jpeg"
    },
@@ -270,8 +270,8 @@ const monsters = [
       // floor 3
       // 9
       name: "Fire Elemental",
-      level: 11,
-      health: 240,
+      level: 17,
+      health: 700,
       difficulty: "Easy",
       image: "images/fireElemental.jpeg"
    },
@@ -279,8 +279,8 @@ const monsters = [
       // floor 3
       // 10
       name: "Large Stone Golem",
-      level: 13,
-      health: 500,
+      level: 20,
+      health: 1250,
       difficulty: "Medium",
       image: "images/largeStoneGolem.jpeg"
    },
@@ -288,8 +288,8 @@ const monsters = [
       // floor 3
       // 11
       name: "Lava Lizard",
-      level: 15,
-      health: 430,
+      level: 24,
+      health: 1000,
       difficulty: "Hard",
       image: "images/lavaLizard.jpeg"
    },
@@ -297,8 +297,8 @@ const monsters = [
       // floor 3 boss
       // 12
       name: "Red Dragon",
-      level: 20,
-      health: 1250,
+      level: 30,
+      health: 4000,
       difficulty: "FINAL BOSS",
       image: "images/redDragon.jpeg"
    },
@@ -306,8 +306,8 @@ const monsters = [
       // Phantom
       // 13
       name: "The Ghost of Red Dragon",
-      level: 30,
-      health: 2750,
+      level: 50,
+      health: 10000,
       difficulty: "Good Luck",
       image: "images/redPhantom.jpeg"
    }
@@ -411,8 +411,8 @@ const innerLocations = [
    {
       // 1
       name: "inner level up",
-      text: ["Strength +3",
-         "Defense +3, Max Health +50",
+      text: ["Strength +5",
+         "Defense +5, Max Health +50",
          "Elemental Damage +10%", "Dodge Chance +5%, Extra Attack Chance +5%", "", ""],
       functions: [dmgBuff, defenseBuff, elemBuff, speedBuff, null, null],
       background: "lightblue"
@@ -499,20 +499,11 @@ function innerUpdate(num) {
 
    if (num == 1)
    {
-      if (dodgeChance > .35) { innerButton4.innerText = "Extra Attack Chance +10%"; }
-      if (bossOne) { innerButton3.innerText = ""; }
+      if (dodgeChance > .35) { innerButton4.innerText = "Extra Attack Chance +5%"; }
    }
 
    if (num == 2) {
       innerButton1.innerText = `ready your ${weapons[currentWeapon].name}`;
-   }
-
-   if (num == 2 && bossOne)
-   {
-      innerButton3.innerText = "";
-      innerButton4.innerText = "";
-      innerButton5.innerText = "";
-      innerButton6.innerText = "";
    }
 
    if (innerButton1.innerText == "") { innerButton1.style.display = "none"; } else { innerButton1.style.display = "inline"; }
@@ -680,7 +671,7 @@ let items = [
       name: "Hydra Teeth",
       count: 0,
       text: "WHERE ARE ALL OF THESE COMING FROM??? WHICH IDIOT DID THIS?????",
-      effect: "Enhances poison damage by 10% (+5% per stack) and makes it harder to dispel (base 50%, -1% per stack)"
+      effect: "Enhances poison damage by 10% (+5% per stack) and makes it harder to dispel (base 35%, -5% per stack)"
    }
 ]
 /*
@@ -690,7 +681,7 @@ increase weapon dmg
 */
 
 function chanceItem() {
-   if (Math.random() > .8)
+   if (Math.random() > .7)
    {
       whatItem = Math.floor(Math.random() * 8);
       items[whatItem].count++;
@@ -703,7 +694,7 @@ function chanceItem() {
       if (items[6].count > 0) { iceItemBuff = 1.2 + .1 * items[6].count - 1; }
       if (items[7].count > 0) { fireItemBuff = 1.4 + .2 * items[7].count - 1; }
       if (items[8].count > 0) { poisonItemBuff = 1.1 + .05 * items[8].count - 1; }
-      poisonDispelChance = .5 - .01 * items[8].count;
+      poisonDispelChance = .35 - .05 * items[8].count;
       text.innerText += " The " + monsters[fighting].name + " dropped a " + items[whatItem].name + "!\n\n" + items[whatItem].text;
       itemUnlock = true;
       updateLists();
@@ -816,8 +807,8 @@ function levelUp() {
       playerLevel++;
       xpText.innerText = `${xp}/${levelCost}`;
       levelingText.innerText = "Level: " + playerLevel;
-      strength += 3;
-      def += 3;
+      strength += 5;
+      def += 5;
       update(locations[8]);
       innerUpdate(1);
       controls.style.display = "none";
@@ -837,14 +828,14 @@ function levelUpReturn() {
 }
 
 function defenseBuff() {
-   def += 3;
+   def += 5;
    maxHealth += 50;
    healthText.innerText = `${health}/${maxHealth}`;
    levelUpReturn();
 }
 
 function dmgBuff() {
-   strength += 3;
+   strength += 5;
    levelUpReturn();
 }
 
@@ -948,7 +939,7 @@ function equipWeapon() {
 function defend() {
    text.innerText = `You ready yourself for the ${monsters[fighting].name}'s attack`;
    defending = true;
-   setTimeout(monsterAttack, 2500);
+   setTimeout(monsterAttack, 2000);
 }
 
 function addPoison() {
@@ -957,8 +948,6 @@ function addPoison() {
    ice = false;
    fire = false;
    text.innerText = "You imbue your weapon with deadly poison!";
-   innerButtonAnnulment();
-   setTimeout(monsterAttack, 2000);
 }
 
 function addFire() {
@@ -967,8 +956,6 @@ function addFire() {
    ice = false;
    poison = false;
    text.innerText = "You imbue your weapon with raging fire!";
-   innerButtonAnnulment();
-   setTimeout(monsterAttack, 2000);
 }
 
 function addIce() {
@@ -977,8 +964,6 @@ function addIce() {
    lightning = false;
    poison = false;
    text.innerText = "You imbue your weapon with petrifying ice!";
-   innerButtonAnnulment();
-   setTimeout(monsterAttack, 2000);
 }
 
 function addLightning() {
@@ -987,8 +972,6 @@ function addLightning() {
    ice = false;
    poison = false;
    text.innerText = "You imbue your weapon with sparking lightning!";
-   innerButtonAnnulment();
-   setTimeout(monsterAttack, 2000);
 }
 
 function inspect() {
@@ -1016,21 +999,18 @@ function playerAttack() {
       totalDmg = 0;
       for (i = numAttacks; i > 0; i--) {
          if (isMonsterHit) {
-            attDmg = weapons[currentWeapon].power * (1 + strength / 20);
+            attDmg = Math.floor(weapons[currentWeapon].power * (1 + strength / 50) * rollAtt());
             if (isCrit()) { attDmg *= (1 + critDmg / 100); }
-            rollAtt();
-            dmgRan += .1;
-            attDmg = Math.floor(attDmg * dmgRan);
             if (lightning) {
-               attDmg *= Math.floor((1 + lightningDmgBonus + jolt) * elementalDmgBuff * lightningItemBuff);
-               jolt += .1 * lightningItemBuff * weapons[currentWeapon].buildup;
+               attDmg = Math.floor((attDmg + 1) * (lightningDmgBonus + jolt) * elementalDmgBuff * lightningItemBuff);
+               jolt += .2 * lightningItemBuff * weapons[currentWeapon].buildup;
             }
             if (ice) {
-               attDmg *= Math.floor((1 + iceDmgBonus) * elementalDmgBuff * iceItemBuff);
+               attDmg = Math.floor((attDmg + 1) * iceDmgBonus * elementalDmgBuff * iceItemBuff);
                frost = Math.floor((attDmg*iceDmgBonus) * frostMult * iceItemBuff * weapons[currentWeapon].buildup);
             }
             if (fire) {
-               attDmg *= Math.floor((1 + fireDmgBonus) * elementalDmgBuff * fireItemBuff);
+               attDmg = Math.floor((attDmg + 2) * fireDmgBonus * elementalDmgBuff * fireItemBuff);
                fire = false;
             }
             if (poison) {
@@ -1069,47 +1049,43 @@ function monsterAttack() {
    if (poisoned) {
       monsterHealth -= poisonDmg;
       text.innerText += ` The ${monsters[fighting].name} takes ${poisonDmg} damage from poison!`;
+      // V
       if (Math.random() > poisonDispelChance) {
          poisoned = false;
          poisonDmg = 0;
          text.innerText += ` It's no longer poisoned.`;
       }
+      // ^
       monsterHealthText.innerText = monsterHealth;
    }
    if (health <= 0)
       {
          lose();
-      } else if (monsterHealth <= 0) { defeatMonster(); }
-      innerUpdate(2);
+      } else if (monsterHealth <= 0) { defeatMonster(); } else { innerUpdate(2); }
 }
 
-function isCrit() {
-   if (Math.random() < critChance) {
-      text.innerText += ", A critical hit,";
+function isCrit(entity) {
+   if (Math.random() > critChance)
+   {
       return true;
-   } else {
-      return false;
    }
 }
 
 function rollAtt() {
-   dmgRan = Math.random();
-   console.log(dmgRan);
-   if (dmgRan < .8) {
-      rollAtt();
-   }
-   dmgRan += .1;
+   return .95 + (Math.random()/10);
 }
 
 function getMonsterAttackValue(level) {
-   monDmg = (level * 6 - def / 10) * (1 - def / (def + 300)) - defBonus;
-   if (Math.random() > .9) { dmgRan *= 2; }
-   monDmg = Math.floor(monDmg * dmgRan);
+   monDmg = Math.floor((level * 5 - def / 50) * (1 - def / (def + 1000)) * rollAtt() - defBonus);
    if (frost >= monsterHealth/3) {
-      monDmg = Math.floor(monDmg/2);
-      text.innerText += `it's frosted, reducing it's damage!`;
+      monDmg = Math.floor(monDmg/1.5);
+      text.innerText += ` it's frosted, reducing it's damage;`;
    }
-   frost /= 1.4;
+   frost /= 1.3;
+   if (Math.random() > .9)
+   {
+      monDmg *= 2;
+   }
    if (defending) {monDmg = Math.floor(monDmg/4); }
    if (monDmg < 0) {
       monDmg = 0;
@@ -1140,7 +1116,6 @@ function defeatMonster() {
    if (bossOne && fightingBoss) {
       bossOne = false;
       update(locations[4]);
-      text.innerText += " You also find a vial of poison and a book with incantations that can imbue your weapons with the elements!";
    } else if (bossTwo && fightingBoss) {
       bossTwo = false;
       update(locations[4]);
@@ -1195,7 +1170,7 @@ function restart() {
    elementalDmgBuff = 1;
    lightningDmgBonus = .1;
    iceDmgBonus = .2;
-   fireDmgBonus = .4;
+   fireDmgBonus = 1.4;
    frostMult = 1;
    xpBonus = 1;
    goldBonus = 1;
@@ -1236,7 +1211,6 @@ function restart() {
    fighting = 0;
    monsterDif = "";
    monDmg = 0;
-   dmgRan = 0;
    attDmg = 0;
    whatItem = 0;
 
