@@ -1,10 +1,11 @@
 // Initializing variables
 let xp = 0;
 let levelCost = 5;
-let maxHealth = 200;
+let maxHealth = 100;
 let health = maxHealth;
 let gold = 50;
 let currentWeapon = 0;
+let alternateWeapon = 1;
 let playerLevel = 1;
 let strength = 0;
 let def = 0;
@@ -41,12 +42,14 @@ let fightingBoss = false;
 let procUnlock = false;
 let itemUnlock = false;
 let floor2Shop = false;
-let boughtDagger = false;
-let boughtAxe = false;
+let boughtSeconds = false;
+let boughtQuarter = false;
 let boughtSword = false;
 let boughtScimitars = false;
 let boughtGreatsword = false;
 let poisoned = false;
+let quick = true;
+let storage = 0;
 let defBonus = 0;
 let leech = 0;
 let poisonDmg = 0;
@@ -84,24 +87,6 @@ Living Armor (Special)
 
 New concepts:
 Elemental advantages
-weapons shop
-rework weapons
-
-// Image HTML example code
-
-<script type="text/javascript">
-    function changeImage(a) {
-        document.getElementById("img").src=a;
-    }
-</script>
-<div id="main_img">
-    <img id="img" src="placehold">
-</div>
-<div id="thumb_img">
-    <img src='placehold'  onclick='changeImage("placehold");'>
-    <img src='placehold'  onclick='changeImage("placehold");'>
-    <img src='placehold'  onclick='changeImage("placehold");'>
-</div>
 
 */
 // Initializing queries...
@@ -112,7 +97,6 @@ const button3 = document.querySelector("#button3");
 const button4 = document.querySelector("#button4");
 const controls = document.querySelector("#controls");
 const text = document.querySelector("#text");
-
 const xpText = document.querySelector("#xpText");
 const healthText = document.querySelector("#healthText");
 const goldText = document.querySelector("#goldText");
@@ -167,7 +151,6 @@ const featherCount = document.querySelector("#featherCount");
 const featherDesc = document.querySelector("#featherDesc");
 const hydraTeethCount = document.querySelector("#hydraTeethCount");
 const hydraTeethDesc = document.querySelector("#hydraTeethDesc");
-
 // Initializing Menu
 xpText.innerText = `${xp}/${levelCost}`;
 healthText.innerText = `${health}/${maxHealth}`;
@@ -175,12 +158,14 @@ goldText.innerText = gold;
 focusMenu.style.display = "none";
 // WEAPONS
 const weapons = [
-   { name: 'stick', power: 2, buildup: 1, speed: 3, price: 0},
-   { name: 'dagger', power: 5, buildup: 3, speed: 2, price: 150 },
-   { name: 'axe', power: 12, buildup: 4, speed: 1, price: 150 },
-   { name: 'sword', power: 16, buildup: 5, speed: 2, price: 600 },
-   { name: 'scimitars', power: 12, buildup: 6, speed: 4, price: 1500 },
-   { name: 'greatsword', power: 64, buildup: 16, speed: 1, price: 1500 }
+   { name: 'stick', power: 2, buildup: 1, speed: 3, upgrade: 0, price: 0},
+   { name: 'rock', power: 6, buildup: 2, speed: 1, upgrade: 0, price: 0},
+   { name: 'dagger', power: 5, buildup: 3, speed: 2, upgrade: 0, price: 150 },
+   { name: 'axe', power: 12, buildup: 4, speed: 1, upgrade: 0, price: 150 },
+   { name: 'quarterstaff', power: 16, buildup: 5, speed: 2, upgrade: 0, price: 750 },
+   { name: 'sword', power: 40, buildup: 8, speed: 1, upgrade: 0, price: 750 },
+   { name: 'scimitars', power: 12, buildup: 6, speed: 4, upgrade: 0, price: 2000 }
+   { name: 'greatsword', power: 64, buildup: 16, speed: 1, upgrade: 0, price: 2000 }
 ];
 
 // MONSTERS
@@ -404,8 +389,8 @@ const innerLocations = [
    {
       // 0
       name: "inner store",
-      text: [`buy food for ${foodRegen} health (10 gold)`, `buy a dagger (${weapons[1].price} gold)`, `buy an axe (${weapons[2].price} gold)`, `buy a sword (${weapons[3].price} gold)`, `buy scimitars (${weapons[4].price} gold)`, `buy a greatsword (${weapons[5].price} gold)`],
-      functions: [buyHealth, equipDagger, equipAxe, equipSword, equipScimitars, equipGreatsword],
+      text: [`buy food for ${foodRegen} health (10 gold)`, `buy a dagger and axe(${weapons[1].price} gold)`, `buy a quarterstaff (${weapons[3].price} gold)`, `buy a sword (${weapons[4].price} gold)`, `buy scimitars (${weapons[5].price} gold)`, `buy a greatsword (${weapons[6].price} gold)`],
+      functions: [buyHealth, equipSeconds, equipQuarter, equipSword, equipScimitars, equipGreatsword],
       background: "lightblue"
    },
    {
@@ -421,10 +406,11 @@ const innerLocations = [
       // 2
       name: "inner fight",
       text: [`Ready your ${weapons[currentWeapon].name}`, "Defend", "Imbue your weapon with poison", "Imbue your weapon with fire", "Imbue your weapon with ice", "imbue your weapon with lightning"],
-      functions: [equipWeapon, defend, addPoison, addFire, addIce, addLightning],
+      functions: [switchWeapon, defend, addPoison, addFire, addIce, addLightning],
       background: "#ef8011"
    }
 ];
+
 // initialize buttons
 button1.onclick = goStore;
 button2.onclick = goDung;
@@ -480,20 +466,20 @@ function innerUpdate(num) {
 
    if (num == 0) {
       innerButton1.innerText = `buy food for ${foodRegen} health (10 gold)`;
-      if (boughtDagger) {
-         innerButton2.innerText = "equip the dagger";
+      if (boughtSeconds) {
+         innerButton2.innerText = "upgrade the dagger and axe";
       }
-      if (boughtAxe) {
-         innerButton3.innerText = "equip the axe";
+      if (boughtQuarter) {
+         innerButton3.innerText = "upgrade the quarterstaff";
       }
       if (boughtSword) {
-         innerButton4.innerText = "equip the sword";
+         innerButton4.innerText = "upgrade the sword";
       }
       if (boughtScimitars) {
-         innerButton5.innerText = "equip the scimitars";
+         innerButton5.innerText = "upgrade the scimitars";
       }
       if (boughtGreatsword) {
-         innerButton6.innerText = "equip the greatsword";
+         innerButton6.innerText = "upgrade the greatsword";
       }
    }
 
@@ -503,7 +489,7 @@ function innerUpdate(num) {
    }
 
    if (num == 2) {
-      innerButton1.innerText = `ready your ${weapons[currentWeapon].name}`;
+      innerButton1.innerText = `alternate your weapon (${weapons[currentWeapon].name} -> ${weapons[alternateWeapon].name})`;
    }
 
    if (innerButton1.innerText == "") { innerButton1.style.display = "none"; } else { innerButton1.style.display = "inline"; }
@@ -714,88 +700,143 @@ function buyHealth() {
    }
 }
 
-function equipDagger() {
- if (!boughtDagger) {
-   if (gold < weapons[1].price) { text.innerText = "You don't have enough for that!"; }
+function equipSeconds() {
+ if (!boughtSeconds) {
+   if (gold < weapons[2].price) { text.innerText = "You don't have enough for that!"; }
    else {
-      boughtDagger = true;
-      innerUpdate(0);
-      currentWeapon = 1;
-      text.innerText = `You bought the ${weapons[currentWeapon].name}! (and equipped it)`;
-      gold -= weapons[1].price;
+      boughtSeconds = true;
+      if (quick)
+         {
+            currentWeapon = 2;
+            alternateWeapon = 3;
+         } else {
+            currentWeapon = 3;
+            alternateWeapon = 2;
+         }
+      text.innerText = `You bought the ${weapons[currentWeapon].name}!`;
+      gold -= weapons[2].price;
       goldText.innerText = gold;
+      weapons[2].price = Math.floor(weapons[2].price * 2.5);
+      weapons[3].price = weapons[2].price;
+      innerUpdate(0);
    }
  } else {
-   currentWeapon = 1;
-   text.innerText = `You equip the ${weapons[currentWeapon].name}`;
+   if (gold < weapons[2].price) { text.innerText = "You don't have enough for that!"; } else {
+      weapons[2].upgrade++;
+      weapons[3].upgrade++;
+      text.innerText = `You upgrade both your dagger and axe!`;
+      weapons[2].price = Math.floor(weapons[2].price * 1.5);
+      weapons[3].price = weapons[2].price;
+      innerUpdate(0);
+   }
  }
 }
 
-function equipAxe() {
-   if (!boughtAxe) {
-      if (gold < weapons[2].price) { text.innerText = "You don't have enough for that!"; }
+function equipQuarter() {
+   if (!boughtQuarter) {
+      if (gold < weapons[4].price) { text.innerText = "You don't have enough for that!"; }
       else {
-         boughtAxe = true;
-         innerUpdate(0);
-         currentWeapon = 2;
-         text.innerText = `You bought the ${weapons[currentWeapon].name}! (and equipped it)`;
-         gold -= weapons[2].price;
+         boughtQuarter = true;
+         if (quick)
+         {
+            currentWeapon = 4;
+         } else {
+            alternateWeapon = 4;
+         }
+         text.innerText = `You bought the ${weapons[4].name}!`;
+         gold -= weapons[4].price;
          goldText.innerText = gold;
+         weapons[4].price = Math.floor(weapons[4].price * 2);
+         innerUpdate(0);
       }
     } else {
-      currentWeapon = 2;
-      text.innerText = `You equip the ${weapons[currentWeapon].name}`;
+      if (gold < weapons[4].price) { text.innerText = "You don't have enough for that!"; } else {
+         weapons[4].upgrade++;
+         text.innerText = `You upgrade your ${weapons[4].name}!`;
+         weapons[4].price = Math.floor(weapons[4].price * 1.5);
+         innerUpdate(0);
     }
+   }
 }
 
 function equipSword() {
    if (!boughtSword) {
-      if (gold < weapons[3].price) { text.innerText = "You don't have enough for that!"; }
+      if (gold < weapons[5].price) { text.innerText = "You don't have enough for that!"; }
       else {
          boughtSword = true;
-         innerUpdate(0);
-         currentWeapon = 3;
-         text.innerText = `You bought the ${weapons[currentWeapon].name}! (and equipped it)`;
-         gold -= weapons[3].price;
+         if (quick)
+            {
+               currentWeapon = 5;
+            } else {
+               alternateWeapon = 5;
+            }
+         text.innerText = `You bought the ${weapons[currentWeapon].name}!`;
+         gold -= weapons[5].price;
          goldText.innerText = gold;
+         weapons[5].price = Math.floor(weapons[5].price * 2);
+         innerUpdate(0);
       }
     } else {
-      currentWeapon = 3;
-      text.innerText = `You equip the ${weapons[currentWeapon].name}`;
+      if (gold < weapons[5].price) { text.innerText = "You don't have enough for that!"; } else {
+         weapons[5].upgrade++;
+         text.innerText = `You upgrade your ${weapons[5].name}!`;
+         weapons[5].price = Math.floor(weapons[5].price * 1.5);
+         innerUpdate(0);
+    }
     }
 }
 
 function equipScimitars() {
    if (!boughtScimitars) {
-      if (gold < weapons[4].price) { text.innerText = "You don't have enough for that!"; }
+      if (gold < weapons[6].price) { text.innerText = "You don't have enough for that!"; }
       else {
          boughtScimitars = true;
-         innerUpdate(0);
-         currentWeapon = 4;
-         text.innerText = `You bought the ${weapons[currentWeapon].name}! (and equipped it)`;
-         gold -= weapons[4].price;
+         if (quick)
+            {
+               currentWeapon = 6;
+            } else {
+               alternateWeapon = 6;
+            }
+         text.innerText = `You bought the ${weapons[currentWeapon].name}!`;
+         gold -= weapons[6].price;
          goldText.innerText = gold;
+         weapons[6].price = Math.floor(weapons[6].price * 2);
+         innerUpdate(0);
       }
     } else {
-      currentWeapon = 4;
-      text.innerText = `You equip the ${weapons[currentWeapon].name}`;
+      if (gold < weapons[6].price) { text.innerText = "You don't have enough for that!"; } else {
+         weapons[6].upgrade++;
+         text.innerText = `You upgrade your ${weapons[6].name}!`;
+         weapons[6].price = Math.floor(weapons[6].price * 1.5);
+         innerUpdate(0);
+    }
     }
 }
 
 function equipGreatsword() {
    if (!boughtGreatsword) {
-      if (gold < weapons[5].price) { text.innerText = "You don't have enough for that!"; }
+      if (gold < weapons[7].price) { text.innerText = "You don't have enough for that!"; }
       else {
          boughtGreatsword = true;
-         innerUpdate(0);
-         currentWeapon = 5;
-         text.innerText = `You bought the ${weapons[currentWeapon].name}! (and equipped it)`;
-         gold -= weapons[5].price;
+         if (quick)
+            {
+               currentWeapon = 7;
+            } else {
+               alternateWeapon = 7;
+            }
+         text.innerText = `You bought the ${weapons[currentWeapon].name}!`;
+         gold -= weapons[7].price;
          goldText.innerText = gold;
+         weapons[7].price = Math.floor(weapons[7].price * 2);
+         innerUpdate(0);
       }
     } else {
-      currentWeapon = 5;
-      text.innerText = `You equip the ${weapons[currentWeapon].name}`;
+      if (gold < weapons[7].price) { text.innerText = "You don't have enough for that!"; } else {
+         weapons[7].upgrade++;
+         text.innerText = `You upgrade your ${weapons[7].name}!`;
+         weapons[7].price = Math.floor(weapons[7].price * 1.5);
+         innerUpdate(0);
+    }
     }
 }
 
@@ -929,11 +970,21 @@ function goFight() {
       text.innerText = "A special Slime has appeared!!";
    }
    innerUpdate(2);
+   focusImage.onclick = playerAttack;
 }
 
-function equipWeapon() {
-   focusImage.onclick = playerAttack;
-   text.innerText = `You ready your ${weapons[currentWeapon].name}.`;
+function switchWeapon() {
+   storage = currentWeapon;
+   currentWeapon = alternateWeapon;
+   alternateWeapon = storage;
+   if (quick)
+   {
+      quick = false;
+   } else {
+      quick = true;
+   }
+   text.innerText = ``;
+   // pin
 }
 
 function defend() {
