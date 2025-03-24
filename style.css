@@ -10,7 +10,7 @@ body {
 
 #mainGame {
  max-width: 900px;
- max-height: 800px;
+ max-height: 1200px;
  background-color: #ffffff;
  color: #ffffff;
  margin: 30px auto 0px;
@@ -92,8 +92,9 @@ body {
 #itemShow {
   cursor: pointer;
   color: #0a0a23;
-  background-image: linear-gradient(lightblue, #ec797c);
+  background-image: linear-gradient(#fecc4c, #ec797c);
   border: 3px solid #feac32;
+  margin: 3px;
 }
 
 .stat {
@@ -119,7 +120,7 @@ body {
 #statShow {
   cursor: pointer;
   color: #0a0a23;
-  background-image: linear-gradient(#ffac33, pink);
+  background-image: linear-gradient(#fecc4c, pink);
   border: 3px solid #feac32;
   margin: 3px;
 }
