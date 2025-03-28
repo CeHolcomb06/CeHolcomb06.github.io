@@ -159,14 +159,14 @@ goldText.innerText = gold;
 focusMenu.style.display = "none";
 // WEAPONS
 const weapons = [
-   { name: 'stick', power: 2, buildup: 1, speed: 3, upgrade: 0, price: 0},
-   { name: 'rock', power: 6, buildup: 2, speed: 1, upgrade: 0, price: 0},
-   { name: 'dagger', power: 5, buildup: 3, speed: 2, upgrade: 0, price: 150 },
-   { name: 'axe', power: 12, buildup: 4, speed: 1, upgrade: 0, price: 150 },
-   { name: 'quarterstaff', power: 16, buildup: 5, speed: 2, upgrade: 0, price: 750 },
-   { name: 'sword', power: 40, buildup: 8, speed: 1, upgrade: 0, price: 750 },
-   { name: 'scimitars', power: 12, buildup: 6, speed: 4, upgrade: 0, price: 2000 },
-   { name: 'greatsword', power: 64, buildup: 16, speed: 1, upgrade: 0, price: 2000 }
+   { name: 'stick', power: 2, buildup: 4, speed: 3, upgrade: 0, price: 0},
+   { name: 'rock', power: 6, buildup: 3, speed: 1, upgrade: 0, price: 0},
+   { name: 'dagger', power: 5, buildup: 12, speed: 2, upgrade: 0, price: 150 },
+   { name: 'axe', power: 12, buildup: 8, speed: 1, upgrade: 0, price: 150 },
+   { name: 'quarterstaff', power: 32, buildup: 18, speed: 2, upgrade: 0, price: 750 },
+   { name: 'sword', power: 40, buildup: 18, speed: 1, upgrade: 0, price: 750 },
+   { name: 'scimitars', power: 12, buildup: 26, speed: 4, upgrade: 0, price: 2000 },
+   { name: 'greatsword', power: 64, buildup: 55, speed: 1, upgrade: 0, price: 2000 }
 ];
 
 // MONSTERS
@@ -564,6 +564,7 @@ function goDung() {
 }
 
 function goFloor() {
+   jolt = 0;
    lightning = false;
    fire = false;
    ice = false;
@@ -1055,31 +1056,31 @@ function playerAttack() {
             attDmg = Math.floor((weapons[currentWeapon].power * Math.pow(1.2, weapons[currentWeapon].upgrade)) * (1 + strength / 50) * rollAtt());
             if (isCrit()) { attDmg *= (1 + critDmg / 100); }
             if (lightning) {
-               attDmg = Math.floor((attDmg + 1) * (lightningDmgBonus + jolt) * elementalDmgBuff * lightningItemBuff);
-               jolt += .2 * lightningItemBuff * weapons[currentWeapon].buildup;
+               attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 1) * (lightningDmgBonus + jolt) * elementalDmgBuff * lightningItemBuff);
+               jolt += .1 * lightningItemBuff * weapons[currentWeapon].buildup;
             }
             if (ice) {
-               attDmg = Math.floor((attDmg + 1) * iceDmgBonus * elementalDmgBuff * iceItemBuff);
+               attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 1) * iceDmgBonus * elementalDmgBuff * iceItemBuff);
                frost = Math.floor((attDmg*iceDmgBonus) * frostMult * iceItemBuff * weapons[currentWeapon].buildup);
             }
             if (fire) {
-               attDmg = Math.floor((attDmg + 2) * fireDmgBonus * elementalDmgBuff * fireItemBuff);
+               attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 2) * fireDmgBonus * elementalDmgBuff * fireItemBuff);
                fire = false;
             }
             if (poison) {
-               poisonDmg += Math.floor(attDmg/2 * poisonItemBuff * weapons[currentWeapon].buildup);
+               poisonDmg += Math.floor(attDmg/3 * Math.pow(1.2, weapons[currentWeapon].upgrade) * poisonItemBuff * weapons[currentWeapon].buildup/2);
                poisoned = true;
             }
             monsterHealth -= attDmg;
             text.innerText += ` ${attDmg} damage!`;
             totalDmg += attDmg;
          } else { text.innerText += " It dodges out of the way!"; }
-         lightning = false;
-         jolt = 0;
-         ice = false;
-         fire = false;
-         poison = false;
       }
+      lightning = false;
+      jolt = 0;
+      ice = false;
+      fire = false;
+      poison = false;
       text.innerText += `(${totalDmg} total)`;
       monsterHealthText.innerText = monsterHealth;
       if (monsterHealth <= 0)
@@ -1101,13 +1102,11 @@ function monsterAttack() {
    if (poisoned) {
       monsterHealth -= poisonDmg;
       text.innerText += ` The ${monsters[fighting].name} takes ${poisonDmg} damage from poison!`;
-      // V
       if (Math.random() > poisonDispelChance) {
          poisoned = false;
          poisonDmg = 0;
          text.innerText += ` It's no longer poisoned.`;
       }
-      // ^
       monsterHealthText.innerText = monsterHealth;
    }
    if (health <= 0)
@@ -1119,7 +1118,7 @@ function monsterAttack() {
       }
 }
 
-function isCrit(entity) {
+function isCrit() {
    if (Math.random() > critChance)
    {
       return true;
@@ -1132,11 +1131,11 @@ function rollAtt() {
 
 function getMonsterAttackValue(level) {
    monDmg = Math.floor((level * 5 - def / 50) * (1 - def / (def + 1000)) * rollAtt() - defBonus);
-   if (frost >= monsterHealth/3) {
-      monDmg = Math.floor(monDmg/1.5);
+   if (frost >= monsters[fighting].health/2) {
+      monDmg = Math.floor(monDmg/1.7);
       text.innerText += ` it's frosted, reducing it's damage;`;
    }
-   frost /= 1.3;
+   frost /= 1.1;
    if (Math.random() > .9)
    {
       monDmg *= 2;
@@ -1156,6 +1155,7 @@ function isPlayerHit() {
 }
 
 function defeatMonster() {
+   jolt = 0;
    innerButtons.style.display = "none";
    poisoned = false;
    poisonDmg = 0;
@@ -1224,8 +1224,8 @@ function restart() {
    foodRegen = 10;
    addAttChance = .1;
    elementalDmgBuff = 1;
-   lightningDmgBonus = .1;
-   iceDmgBonus = .2;
+   lightningDmgBonus = 1.2;
+   iceDmgBonus = 1.2;
    fireDmgBonus = 1.4;
    frostMult = 1;
    xpBonus = 1;
@@ -1272,6 +1272,12 @@ function restart() {
    attDmg = 0;
    whatItem = 0;
 
+   //items[0].count = items.length;
+   for (i = items.length - 1; i >= 0; i--)
+   {
+      items[i].count = 0;
+   }
+
    button4.style.display = "inline";
 
    healthText.innerText = `${health}/${maxHealth}`;
@@ -1279,7 +1285,7 @@ function restart() {
    goldText.innerText = gold;
    levelingText.innerText = "Level: " + playerLevel;
    goTown();
-   text.innerText = "Welcome to Dungeon Defeater! The town has been experiencing monster attacks leaking out of the dungeon. The town's defenses are crumbling! Go in and take the fight to the source of the trouble!";
+   text.innerText = "Welcome to Dungeon Defeater! The town has been experiencing monster attacks leaking out of the dungeon. The town's defenses are crumbling! Go in and take the fight to the source of the trouble! Armed with a stick and a rock, you must progress through the dungeon to try and find a way to stop the invading monsters!";
 }
 
 function easterEgg() {
