@@ -6,6 +6,8 @@ let health = maxHealth;
 let gold = 50;
 let currentWeapon = 0;
 let alternateWeapon = 1;
+let quickWeapon = 0;
+let heavyWeapon = 1;
 let playerLevel = 1;
 let strength = 0;
 let def = 0;
@@ -19,9 +21,6 @@ let procChance = .2;
 let foodRegen = 10;
 let addAttChance = .1;
 let elementalDmgBuff = 1;
-let lightningDmgBonus = 1.2;
-let iceDmgBonus = 1.2;
-let fireDmgBonus = 1.4;
 let frostMult = 1;
 let xpBonus = 1;
 let goldBonus = 1;
@@ -159,14 +158,14 @@ goldText.innerText = gold;
 focusMenu.style.display = "none";
 // WEAPONS
 const weapons = [
-   { name: 'stick', power: 2, buildup: 4, speed: 3, upgrade: 0, price: 0},
+   { name: 'stick', power: 2, buildup: 2, speed: 3, upgrade: 0, price: 0},
    { name: 'rock', power: 6, buildup: 3, speed: 1, upgrade: 0, price: 0},
-   { name: 'dagger', power: 5, buildup: 12, speed: 2, upgrade: 0, price: 150 },
-   { name: 'axe', power: 12, buildup: 8, speed: 1, upgrade: 0, price: 150 },
-   { name: 'quarterstaff', power: 32, buildup: 18, speed: 2, upgrade: 0, price: 750 },
-   { name: 'sword', power: 40, buildup: 18, speed: 1, upgrade: 0, price: 750 },
-   { name: 'scimitars', power: 12, buildup: 26, speed: 4, upgrade: 0, price: 2000 },
-   { name: 'greatsword', power: 64, buildup: 55, speed: 1, upgrade: 0, price: 2000 }
+   { name: 'dagger', power: 4, buildup: 5, speed: 2, upgrade: 0, price: 200 },
+   { name: 'axe', power: 10, buildup: 4, speed: 1, upgrade: 0, price: 200 },
+   { name: 'quarterstaff', power: 6, buildup: 9, speed: 3, upgrade: 0, price: 750 },
+   { name: 'sword', power: 20, buildup: 14, speed: 1, upgrade: 0, price: 750 },
+   { name: 'scimitars', power: 8, buildup: 15, speed: 4, upgrade: 0, price: 2000 },
+   { name: 'greatsword', power: 44, buildup: 17, speed: 1, upgrade: 0, price: 2000 }
 ];
 
 // MONSTERS
@@ -406,7 +405,7 @@ const innerLocations = [
    {
       // 2
       name: "inner fight",
-      text: [`Ready your ${weapons[currentWeapon].name}`, "Defend", "Imbue your weapon with poison", "Imbue your weapon with fire", "Imbue your weapon with ice", "imbue your weapon with lightning"],
+      text: [`Alternate`, "Defend", "Imbue your weapon with poison", "Imbue your weapon with fire", "Imbue your weapon with ice", "imbue your weapon with lightning"],
       functions: [switchWeapon, defend, addPoison, addFire, addIce, addLightning],
       background: "#ef8011"
    }
@@ -611,7 +610,7 @@ let items = [
       name: "Repulsion Armor Scrap",
       count: 0,
       text: "\"No, this is completely original... NO DON\'T LOOK IT UP!\"",
-      effect: "Reduces damage taken from each hit by 3 (+3 per stack)"
+      effect: "Reduces damage taken from each hit by 5 (+5 per stack)"
    },
    {
       // HEAL ON KILL 3
@@ -665,17 +664,17 @@ increase weapon dmg
 function chanceItem() {
    if (Math.random() > .7)
    {
-      whatItem = Math.floor(Math.random() * 8);
+      whatItem = Math.floor(Math.random() * 9);
       items[whatItem].count++;
       if (items[0].count > 0) { xpBonus = 1.2 + .1 * (items[0].count - 1); }
       if (items[1].count > 0) { goldBonus = 1.2 + .1 * (items[1].count - 1); }
-      if (items[2].count > 0) { defBonus = 3 * items[2].count; }
+      if (items[2].count > 0) { defBonus = 5 * items[2].count; }
       leech = 10 * items[3].count;
       foodRegen = 10 + 5 * items[4].count;
-      if (items[5].count > 0) { lightningItemBuff = 1.2 + .1 * items[5].count - 1; }
-      if (items[6].count > 0) { iceItemBuff = 1.2 + .1 * items[6].count - 1; }
-      if (items[7].count > 0) { fireItemBuff = 1.4 + .2 * items[7].count - 1; }
-      if (items[8].count > 0) { poisonItemBuff = 1.1 + .05 * items[8].count - 1; }
+      if (items[5].count > 0) { lightningItemBuff = 1.1 + .1 * items[5].count; }
+      if (items[6].count > 0) { iceItemBuff = 1.1 + .1 * items[6].count; }
+      if (items[7].count > 0) { fireItemBuff = 1.2 + .2 * items[7].count; }
+      if (items[8].count > 0) { poisonItemBuff = 1.05 + .05 * items[8].count; }
       poisonDispelChance = .35 - .05 * items[8].count;
       text.innerText += " The " + monsters[fighting].name + " dropped a " + items[whatItem].name + "!\n\n" + items[whatItem].text;
       itemUnlock = true;
@@ -701,20 +700,29 @@ function equipSeconds() {
    if (gold < weapons[2].price) { text.innerText = "You don't have enough for that!"; }
    else {
       boughtSeconds = true;
+      if (quickWeapon > 2 && heavyWeapon > 3)
+      {
+         text.innerText = "You already have a more powerful weapon in both slots!";
+      } else {
+         if (quickWeapon < 2) { quickWeapon = 2; }
+         else { text.innerText = "You already have a more powerful weapon in this slot!"; }
+         if (heavyWeapon < 3) { heavyWeapon = 3; }
+         else { text.innerText = "You already have a more powerful weapon in this slot!"; }
       if (quick)
          {
-            currentWeapon = 2;
-            alternateWeapon = 3;
+            currentWeapon = quickWeapon;
+            alternateWeapon = heavyWeapon;
          } else {
-            currentWeapon = 3;
-            alternateWeapon = 2;
+            currentWeapon = heavyWeapon;
+            alternateWeapon = quickWeapon;
          }
-      text.innerText = `You bought the ${weapons[currentWeapon].name}!`;
+      text.innerText = `You bought the ${weapons[2].name} and ${weapons[3].name}!`;
       gold -= weapons[2].price;
       goldText.innerText = gold;
       weapons[2].price = Math.floor(weapons[2].price * 2.5);
       weapons[3].price = weapons[2].price;
       innerUpdate(0);
+      }
    }
  } else {
    if (gold < weapons[2].price) { text.innerText = "You don't have enough for that!"; } else {
@@ -735,17 +743,25 @@ function equipQuarter() {
       if (gold < weapons[4].price) { text.innerText = "You don't have enough for that!"; }
       else {
          boughtQuarter = true;
+         if (quickWeapon > 4)
+         {
+            text.innerText = "You already have a more powerful weapon in this slot!";
+         } else {
+         quickWeapon = 4;
          if (quick)
          {
-            currentWeapon = 4;
+            currentWeapon = quickWeapon;
+            alternateWeapon = heavyWeapon;
          } else {
-            alternateWeapon = 4;
+            alternateWeapon = quickWeapon;
+            currentWeapon = heavyWeapon;
          }
          text.innerText = `You bought the ${weapons[4].name}!`;
          gold -= weapons[4].price;
          goldText.innerText = gold;
          weapons[4].price = Math.floor(weapons[4].price * 2);
          innerUpdate(0);
+         }
       }
     } else {
       if (gold < weapons[4].price) { text.innerText = "You don't have enough for that!"; } else {
@@ -764,17 +780,24 @@ function equipSword() {
       if (gold < weapons[5].price) { text.innerText = "You don't have enough for that!"; }
       else {
          boughtSword = true;
+         if (heavyWeapon > 5) {
+            text.innerText = "You already have a more powerful weapon in this slot!";
+         } else {
+         heavyWeapon = 5;
          if (quick)
             {
-               currentWeapon = 5;
+               currentWeapon = quickWeapon;
+               alternateWeapon = heavyWeapon;
             } else {
-               alternateWeapon = 5;
+               currentWeapon = heavyWeapon;
+               alternateWeapon = quickWeapon;
             }
          text.innerText = `You bought the ${weapons[currentWeapon].name}!`;
          gold -= weapons[5].price;
          goldText.innerText = gold;
          weapons[5].price = Math.floor(weapons[5].price * 2);
          innerUpdate(0);
+         }
       }
     } else {
       if (gold < weapons[5].price) { text.innerText = "You don't have enough for that!"; } else {
@@ -793,11 +816,14 @@ function equipScimitars() {
       if (gold < weapons[6].price) { text.innerText = "You don't have enough for that!"; }
       else {
          boughtScimitars = true;
+         quickWeapon = 6;
          if (quick)
             {
-               currentWeapon = 6;
+               currentWeapon = quickWeapon;
+               alternateWeapon = heavyWeapon;
             } else {
-               alternateWeapon = 6;
+               currentWeapon = heavyWeapon;
+               alternateWeapon = quickWeapon;
             }
          text.innerText = `You bought the ${weapons[currentWeapon].name}!`;
          gold -= weapons[6].price;
@@ -822,11 +848,14 @@ function equipGreatsword() {
       if (gold < weapons[7].price) { text.innerText = "You don't have enough for that!"; }
       else {
          boughtGreatsword = true;
+         heavyWeapon = 7;
          if (quick)
             {
-               currentWeapon = 7;
+               currentWeapon = quickWeapon;
+               alternateWeapon = heavyWeapon;
             } else {
-               alternateWeapon = 7;
+               currentWeapon = heavyWeapon;
+               alternateWeapon = quickWeapon;
             }
          text.innerText = `You bought the ${weapons[currentWeapon].name}!`;
          gold -= weapons[7].price;
@@ -1056,19 +1085,33 @@ function playerAttack() {
             attDmg = Math.floor((weapons[currentWeapon].power * Math.pow(1.2, weapons[currentWeapon].upgrade)) * (1 + strength / 50) * rollAtt());
             if (isCrit()) { attDmg *= (1 + critDmg / 100); }
             if (lightning) {
-               attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 1) * (lightningDmgBonus + jolt) * elementalDmgBuff * lightningItemBuff);
+               attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 1) * (1.2 + jolt) * elementalDmgBuff * lightningItemBuff);
                jolt += .1 * lightningItemBuff * weapons[currentWeapon].buildup;
             }
             if (ice) {
-               attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 1) * iceDmgBonus * elementalDmgBuff * iceItemBuff);
-               frost = Math.floor((attDmg*iceDmgBonus) * frostMult * iceItemBuff * weapons[currentWeapon].buildup);
+               attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 1) * 1.2 * elementalDmgBuff * iceItemBuff);
+               if (quick) {
+                  frost = Math.floor((attDmg*1.2) * frostMult * iceItemBuff * weapons[currentWeapon].buildup/1.7);
+               } else {
+                  frost = Math.floor((attDmg*1.2) * frostMult * iceItemBuff * weapons[currentWeapon].buildup);
+               }
             }
             if (fire) {
-               attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 2) * fireDmgBonus * elementalDmgBuff * fireItemBuff);
+               if (frost >= monsters[fighting].health/2) {
+                  attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 2) * (1 + frost/2 / monsters[fighting].health) * 1.4 * elementalDmgBuff * fireItemBuff);
+                  text.innerText += ` The fire shatters the frost of the ${monsters[fighting].name}, `;
+                  frost = 0;
+               } else {
+                  attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 2) * 1.4 * elementalDmgBuff * fireItemBuff);
+               }
                fire = false;
             }
             if (poison) {
-               poisonDmg += Math.floor(attDmg/3 * Math.pow(1.2, weapons[currentWeapon].upgrade) * poisonItemBuff * weapons[currentWeapon].buildup/2);
+               if (quick) {
+                  poisonDmg += Math.floor((attDmg/7+1) * Math.pow(1.2, weapons[currentWeapon].upgrade) * poisonItemBuff * weapons[currentWeapon].buildup/2);
+               } else {
+                  poisonDmg += Math.floor((attDmg/7+1) * Math.pow(1.2, weapons[currentWeapon].upgrade) * poisonItemBuff * weapons[currentWeapon].buildup/4);
+               }
                poisoned = true;
             }
             monsterHealth -= attDmg;
@@ -1130,12 +1173,12 @@ function rollAtt() {
 }
 
 function getMonsterAttackValue(level) {
-   monDmg = Math.floor((level * 5 - def / 50) * (1 - def / (def + 1000)) * rollAtt() - defBonus);
+   monDmg = Math.floor((level * 7 - def / 50) * (1 - def / (def + 1000)) * rollAtt() - defBonus);
    if (frost >= monsters[fighting].health/2) {
       monDmg = Math.floor(monDmg/1.7);
       text.innerText += ` it's frosted, reducing it's damage;`;
    }
-   frost /= 1.1;
+   frost /= 1.2;
    if (Math.random() > .9)
    {
       monDmg *= 2;
@@ -1156,6 +1199,7 @@ function isPlayerHit() {
 
 function defeatMonster() {
    jolt = 0;
+   frost = 0;
    innerButtons.style.display = "none";
    poisoned = false;
    poisonDmg = 0;
@@ -1164,9 +1208,9 @@ function defeatMonster() {
    if (fighting == 5) {
       xp += 100 * xpBonus;
       gold += 1000 * goldBonus;
-   } else { gold += Math.floor(Math.pow(monsters[fighting].level, 1.4) * 10 * goldBonus); }
+   } else { gold += Math.floor(Math.pow(monsters[fighting].level, 1.4) * 8 * goldBonus); }
    if (monsters[fighting].level > 1 && fighting != 5) {
-      xp += Math.floor(Math.pow(monsters[fighting].level, 1.6) * xpBonus);
+      xp += Math.floor((Math.pow(monsters[fighting].level, 1.5) + 1) * xpBonus);
    } else { xp += 2 * xpBonus; }
    if (bossOne && fightingBoss) {
       bossOne = false;
@@ -1224,9 +1268,6 @@ function restart() {
    foodRegen = 10;
    addAttChance = .1;
    elementalDmgBuff = 1;
-   lightningDmgBonus = 1.2;
-   iceDmgBonus = 1.2;
-   fireDmgBonus = 1.4;
    frostMult = 1;
    xpBonus = 1;
    goldBonus = 1;
