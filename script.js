@@ -12,7 +12,7 @@ let playerLevel = 1;
 let strength = 0;
 let def = 0;
 let critDmg = 2;
-let critChance = 0.1;
+let critChance = 0.2;
 let monMod = 1;
 let goldMult = 1;
 let dodgeChance = 0.1;
@@ -49,6 +49,8 @@ let boughtScimitars = false;
 let boughtGreatsword = false;
 let poisoned = false;
 let quick = true;
+let tutorial = true;
+let tutorial2 = false;
 let storage = 0;
 let defBonus = 0;
 let leech = 0;
@@ -82,7 +84,7 @@ function restart() {
     strength = 0;
     def = 0;
     critDmg = 2;
-    critChance = 0.1;
+    critChance = 0.2;
     monMod = 1;
     goldMult = 1;
     dodgeChance = 0.1;
@@ -119,6 +121,7 @@ function restart() {
     boughtGreatsword = false;
     poisoned = false;
     quick = true;
+    tutorial = false;
     storage = 0;
     defBonus = 0;
     leech = 0;
@@ -138,13 +141,13 @@ function restart() {
     attDmg = 0;
     whatItem = 0;
 
-   //items[0].count = items.length;
    for (i = items.length - 1; i >= 0; i--)
    {
       items[i].count = 0;
    }
 
    button4.style.display = "inline";
+   button4.onclick = levelUp;
 
    healthText.innerText = `${health}/${maxHealth}`;
    xpText.innerText = `${xp}/${levelCost}`;
@@ -499,11 +502,11 @@ const innerLocations = [
 ];
 
 // initialize buttons
-button1.onclick = goStore;
+button1.onclick = null;
 button2.onclick = goDung;
-button3.onclick = itemStore;
-button3.style.display = "none";
-button4.onclick = levelUp;
+button3.onclick = restart;
+button3.innerText = "Skip tutorial";
+button4.onclick = null;
 itemShow.onclick = viewItems;
 itemShow.style.display = "none";
 
@@ -638,6 +641,17 @@ function goTown() {
    fightingBoss = false;
    update(locations[0]);
    floor = 0;
+   if (tutorial2)
+   {
+      text.innerText = "Now that you know how the game works, you can start to explore the cave and find the source of the danger inside the dungeon.";
+      button1.onclick = restart;
+      button1.innerText = "Start your adventure";
+      button2.style.display = "none";
+      button3.style.display = "none";
+      button4.style.display = "none";
+      button4.style.display = "none";
+      tutorial2 = false;
+   }
    if (itemUnlock) {
       button3.style.display = "inline";
       text.innerText += " You can also see a more hidden building that says store on it but in a fancier font.";
@@ -647,12 +661,23 @@ function goTown() {
 function goStore() {
    update(locations[1])
    innerUpdate(0);
+   if (tutorial)
+   {
+      tutorial2 = true;
+      text.innerText = "You can heal with meals or buy and upgrade weapons here at the town.";
+   }
 }
 
 function goDung() {
    fightingBoss = false;
    floor = 1;
    update(locations[2]);
+   if (tutorial)
+   {
+      text.innerText += "\n\nTo start, you need to know how to fight monsters! Click \"Fight Monster\" to find one to fight";
+      button2.onclick = null;
+      button3.onclick = null;
+   }
 }
 
 function goFloor() {
@@ -791,7 +816,7 @@ function chanceItem() {
       poisonDispelChance = .35 - .05 * items[8].count;
       speedItemBuff = 1 + .1 * items[9].count;
       critDmg = 2 + .25 * items[10].count;
-      critChance = .1 + .05 * items[11].count;
+      critChance = .2 + .05 * items[11].count;
       // pin
       text.innerText += " The " + monsters[fighting].name + " dropped a " + items[whatItem].name + "!\n\n" + items[whatItem].text;
       itemUnlock = true;
@@ -1006,6 +1031,7 @@ function levelUp() {
       innerUpdate(1);
       controls.style.display = "none";
       updateLists();
+      text.innerText = "Click one of the bonuses to increase your stats!";
    }
    else {
       text.innerText = "You don't have the XP for that!";
@@ -1016,6 +1042,12 @@ function levelUpReturn() {
    if (floor == 0) { goTown(); }
    else { goFloor(); }
    goTown();
+   if (tutorial)
+   {
+      text.innerText = "Leveling up brings you back to town, now you might need to go heal up in the store.";
+      button2.onclick = null;
+      button3.onclick = null;
+   }
    innerButtons.style.display = "none";
    controls.style.display = "flex";
 }
@@ -1069,6 +1101,7 @@ function monsterSearch() {
    } else if (!bossTwo) {
       fighting = 5;
    } else { monsterSearch(); }
+   if (tutorial) { fighting = 0; }
    goFight();
 }
 
@@ -1123,6 +1156,11 @@ function goFight() {
    }
    innerUpdate(2);
    focusImage.onclick = playerAttack;
+   if (tutorial)
+   {
+      text.innerText += "\n\nHere is your first monster, to attack it you click the image. To switch your weapon, click the leftmost button. However you will want to add some magic to your weapon to enhance it! Click each of them to learn what they do";
+      button1.onclick = null;
+   }
 }
 
 function switchWeapon() {
@@ -1137,10 +1175,15 @@ function switchWeapon() {
    }
    innerUpdate(2);
    text.innerText = `You have swapped to your ${weapons[currentWeapon].name}`;
+   if (tutorial)
+   {
+      text.innerText += "\n\nYou have two weapons, a quick one that guarantees multiple attacks in one turn, and a heavy one that attacks once (or more according to the additional attack chance) but does more damage.";
+   }
 }
 
 function defend() {
    text.innerText = `You ready yourself for the ${monsters[fighting].name}'s attack`;
+   if (tutorial) { text.innerText += " Defending reduces the ememy's damage to 1/4 it's original value"; }
    defending = true;
    setTimeout(monsterAttack, 2000);
 }
@@ -1151,6 +1194,10 @@ function addPoison() {
    ice = false;
    fire = false;
    text.innerText = "You imbue your weapon with deadly poison!";
+   if (tutorial)
+   {
+      text.innerText += "\n\nPoison adds some damage over time to the enemy. however it has the chance to dispel whenever the enemy attacks (35% chance to dispel). Quick weapons apply more poison overall than heavy weapons.";
+   }
 }
 
 function addFire() {
@@ -1159,6 +1206,10 @@ function addFire() {
    ice = false;
    poison = false;
    text.innerText = "You imbue your weapon with raging fire!";
+   if (tutorial)
+   {
+      text.innerText += "\n\nFire adds a large amount of damage to your attack, but it only applies to the first strike. If the enemy is \"frosted\" (see ice) then the damage is multiplied by the amound of frost applied.";
+   }
 }
 
 function addIce() {
@@ -1167,6 +1218,10 @@ function addIce() {
    lightning = false;
    poison = false;
    text.innerText = "You imbue your weapon with petrifying ice!";
+   if (tutorial)
+   {
+      text.innerText += "\n\nIce adds some damage to all attacks in your turn and applies \"frost\" to the enemy. If the frost applied to the enemy is equal to half the enemy's total HP then it's damage is reduced. Heavy weapons apply more frost to the enemy";
+   }
 }
 
 function addLightning() {
@@ -1175,6 +1230,10 @@ function addLightning() {
    ice = false;
    poison = false;
    text.innerText = "You imbue your weapon with sparking lightning!";
+   if (tutorial)
+   {
+      text.innerText += "\n\nLightning increases the damage of all attacks in your turn and builds up \"jolt\". Jolt makes each subsequent attack deal more damage.";
+   }
 }
 
 function innerButtonAnnulment() {
@@ -1197,9 +1256,12 @@ function playerAttack() {
       text.innerText += ` you attack ${numAttacks} times!`;
       totalDmg = 0;
       for (i = numAttacks; i > 0; i--) {
-         if (isMonsterHit) {
+         if (isMonsterHit || tutorial) {
             attDmg = Math.floor((weapons[currentWeapon].power * Math.pow(1.2, weapons[currentWeapon].upgrade)) * (1 + strength / 50) * rollAtt());
-            if (isCrit()) { attDmg *= critDmg; }
+            if (isCrit()) {
+               attDmg *= critDmg;
+               text.innerText += " A critical hit!";
+            }
             if (lightning) {
                attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 1) * (1.2 + jolt) * elementalDmgBuff * lightningItemBuff);
                jolt += .1 * lightningItemBuff * weapons[currentWeapon].buildup;
@@ -1298,6 +1360,7 @@ function getMonsterAttackValue(level) {
    if (Math.random() > .9)
    {
       monDmg *= 2;
+      text.innerText += " a critical hit! ";
    }
    if (defending) {monDmg = Math.floor(monDmg/4); }
    if (monDmg < 0) {
@@ -1306,7 +1369,7 @@ function getMonsterAttackValue(level) {
 }
 
 function isMonsterHit() {
-   return Math.random() < .75 || health <= (maxHealth / 4);
+   return Math.random() < .75 || health >= (maxHealth / 4);
 }
 
 function isPlayerHit() {
@@ -1326,8 +1389,9 @@ function defeatMonster() {
       gold += 1000 * goldBonus;
    } else { gold += Math.floor(Math.pow(monsters[fighting].level, 1.4) * 8 * goldBonus); }
    if (monsters[fighting].level > 1 && fighting != 5) {
-      xp += Math.floor((Math.pow(monsters[fighting].level, 1.5) + 1) * xpBonus);
-   } else { xp += 2 * xpBonus; }
+      xp += Math.floor((Math.pow(monsters[fighting].level, 1.4) + 1) * xpBonus);
+   } else  if (!tutorial) { xp += 2 * xpBonus; }
+   else { xp += 5; }
    if (bossOne && fightingBoss) {
       bossOne = false;
       update(locations[4]);
@@ -1337,7 +1401,7 @@ function defeatMonster() {
    } else if (fightingBoss) {
       winGame();
    } else { update(locations[4]); }
-   if (!fightingBoss) { chanceItem(); }
+   if (!fightingBoss && !tutorial) { chanceItem(); }
    fightingBoss = false;
    health += leech;
    goldText.innerText = Math.floor(gold);
@@ -1345,6 +1409,13 @@ function defeatMonster() {
    xpText.innerText = `${xp}/${levelCost}`;
    if (health > maxHealth) { health = maxHealth; }
    healthText.innerText = `${health}/${maxHealth}`;
+   if (tutorial)
+   {
+      text.innerText = "You have killed the monster! You can either head straight back to town or continue fighting in the dungeon. When you kill monsters you get gold and xp, click level up to continue!";
+      button1.onclick = null;
+      button2.onclick = null;
+      button4.onclick = levelUp;
+   }
 }
 
 function lose() {
