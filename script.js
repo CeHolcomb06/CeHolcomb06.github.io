@@ -11,7 +11,7 @@ let heavyWeapon = 1;
 let playerLevel = 1;
 let strength = 0;
 let def = 0;
-let critDmg = 100;
+let critDmg = 2;
 let critChance = 0.1;
 let monMod = 1;
 let goldMult = 1;
@@ -29,6 +29,7 @@ let iceItemBuff = 1;
 let fireItemBuff = 1;
 let poisonItemBuff = 1;
 let poisonDispelChance = .5;
+let speedItemBuff = 1;
 let poison = false;
 let defending = false;
 let lightning = false;
@@ -66,18 +67,97 @@ let monsterDif = "";
 let monDmg = 0;
 let attDmg = 0;
 let whatItem = 0;
-/*                                    Other Notes:
-Level Bonuses:
-Crit damage increase
-Crit chance increase
-dodge chance increase
 
+function restart() {
+   let xp = 0;
+   let levelCost = 5;
+   let maxHealth = 100;
+   let health = maxHealth;
+   let gold = 50;
+   let currentWeapon = 0;
+   let alternateWeapon = 1;
+   let quickWeapon = 0;
+   let heavyWeapon = 1;
+   let playerLevel = 1;
+   let strength = 0;
+   let def = 0;
+   let critDmg = 2;
+   let critChance = 0.1;
+   let monMod = 1;
+   let goldMult = 1;
+   let dodgeChance = 0.1;
+   let floor = 1;
+   let procChance = .2;
+   let foodRegen = 10;
+   let addAttChance = .1;
+   let elementalDmgBuff = 1;
+   let frostMult = 1;
+   let xpBonus = 1;
+   let goldBonus = 1;
+   let lightningItemBuff = 1;
+   let iceItemBuff = 1;
+   let fireItemBuff = 1;
+   let poisonItemBuff = 1;
+   let poisonDispelChance = .5;
+   let speedItemBuff = 1;
+   let poison = false;
+   let defending = false;
+   let lightning = false;
+   let ice = false;
+   let fire = false;
+   let bossOne = true;
+   let bossTwo = true;
+   let finalBoss = true;
+   let fightingBoss = false;
+   let procUnlock = false;
+   let itemUnlock = false;
+   let floor2Shop = false;
+   let boughtSeconds = false;
+   let boughtQuarter = false;
+   let boughtSword = false;
+   let boughtScimitars = false;
+   let boughtGreatsword = false;
+   let poisoned = false;
+   let quick = true;
+   let storage = 0;
+   let defBonus = 0;
+   let leech = 0;
+   let poisonDmg = 0;
+   let jolt = 0;
+   let frost = 0;
+   let lightningDmg = 0;
+   let iceDmg = 0;
+   let fireDmg = 0;
+   let totalDmg = 0;
+   let numAttacks = 0;
+   let gambleNum = 0;
+   let monsterHealth = 0;
+   let fighting = 0;
+   let monsterDif = "";
+   let monDmg = 0;
+   let attDmg = 0;
+   let whatItem = 0;
+
+   //items[0].count = items.length;
+   for (i = items.length - 1; i >= 0; i--)
+   {
+      items[i].count = 0;
+   }
+
+   button4.style.display = "inline";
+
+   healthText.innerText = `${health}/${maxHealth}`;
+   xpText.innerText = `${xp}/${levelCost}`;
+   goldText.innerText = gold;
+   levelingText.innerText = "Level: " + playerLevel;
+   goTown();
+   text.innerText = "Welcome to Dungeon Defeater! The town has been experiencing monster attacks leaking out of the dungeon. The town's defenses are crumbling! Go in and take the fight to the source of the trouble! Armed with a stick and a rock, you must progress through the dungeon to try and find a way to stop the invading monsters!";
+}
+
+/*                                    Other Notes:
 Custom Item bonuses:
-Gold multiplier
-Monster health decrease (min 25%)
-Monster damage decrease (min 50%)
-Increased XP gains
-Increase bought health
+Monster health decrease (min 25%)?
+Monster damage decrease (min 50%)?
 Multiply weapon damage
 proc items (bleed, ignite, shock, freeze)
 
@@ -150,6 +230,12 @@ const featherCount = document.querySelector("#featherCount");
 const featherDesc = document.querySelector("#featherDesc");
 const hydraTeethCount = document.querySelector("#hydraTeethCount");
 const hydraTeethDesc = document.querySelector("#hydraTeethDesc");
+const wingHelmCount = document.querySelector("#wingHelmCount");
+const wingHelmDesc = document.querySelector("#wingHelmDesc");
+const bayCount = document.querySelector("#bayCount");
+const bayDesc = document.querySelector("#bayDesc");
+const monocleCount = document.querySelector("#monocleCount");
+const monocleDesc = document.querySelector("#monocleDesc");
 
 // Initializing Menu
 xpText.innerText = `${xp}/${levelCost}`;
@@ -297,7 +383,7 @@ const monsters = [
       image: "images/redPhantom.jpeg"
    }
 ];
-//controls.style.display = "none"; V
+
 // LOCATIONS
 const locations = [
    {
@@ -505,9 +591,9 @@ function updateLists() {
    strStat.innerText = Math.floor(strength);
    defStat.innerText = Math.floor(def);
    critCStat.innerText = Math.floor(critChance*100) + "%";
-   critDStat.innerText = Math.floor(critDmg+100) + "%";
-   dodgeStat.innerText = Math.floor(dodgeChance*100) + "%";
-   addAttStat.innerText = Math.floor(addAttChance*100) + "%";
+   critDStat.innerText = Math.floor(critDmg*100) + "%";
+   dodgeStat.innerText = Math.floor(dodgeChance*100*speedItemBuff) + "%";
+   addAttStat.innerText = Math.floor(addAttChance*100*speedItemBuff) + "%";
    elemDmgBonus.innerText = Math.floor(elementalDmgBuff*100) + "%";
 
    sapRingCount.innerText = items[0].count;
@@ -528,6 +614,12 @@ function updateLists() {
    featherDesc.innerText = items[7].effect;
    hydraTeethCount.innerText = items[8].count;
    hydraTeethDesc.innerText = items[8].effect;
+   wingHelmCount.innerText = items[9].count;
+   wingHelmDesc.innerText = items[9].effect;
+   bayCount.innerText = items[10].count;
+   bayDesc.innerText = items[10].effect;
+   monocleCount.innerText = items[11].count;
+   monocleDesc.innerText = items[11].effect;
 }
 
 function viewItems() {
@@ -596,86 +688,110 @@ let items = [
       name: "Sapphire ring",
       count: 0,
       text: "A small sapphire encased in a gold ring, I wonder who was getting married...",
-      effect: "Increases XP gained by 20% (+10% per stack)"
+      effect: "Increases XP gained by 20% per stack"
    },
    {
       // GOLD MULTIPLIER 1
       name: "Golden Scarab",
       count: 0,
       text: "A treasure from another world. It gifts riches upon those who adorn it.",
-      effect: "Increase gold gained by 20% (+10% per stack)"
+      effect: "Increase gold gained by 20% per stack"
    },
    {
       // FLAT DAMAGE RESISTANCE 2
       name: "Repulsion Armor Scrap",
       count: 0,
       text: "\"No, this is completely original... NO DON\'T LOOK IT UP!\"",
-      effect: "Reduces damage taken from each hit by 5 (+5 per stack)"
+      effect: "Reduces damage taken from each hit by 5 per stack"
    },
    {
       // HEAL ON KILL 3
       name: "Blood Drop Pendant",
       count: 0,
       text: "Dark magic infused in a small, red, perfectly cut gem.",
-      effect: "Killing an enemy grants you 10 health (+10 per stack)"
+      effect: "Killing an enemy grants you 10 health per stack"
    },
    {
       // MEAL EFFECTIVENESS 4
       name: "Dwarf Charm",
       count: 0,
       text: "A small charm of a dwarf with a large, black beard. He must've been a great cook in his time...",
-      effect: "Increases the health you recover from meals by 5 (+5 per stack)"
+      effect: "Increases the health you recover from meals by 5 per stack"
    },
    {
       // Lightning Enhance 5
       name: "Arcing Conduit",
       count: 0,
       text: "A small, glowing, blue metal object. Electricity radiates off of it, making it a good conductor.",
-      effect: "Enhances lightning damage and the stacking jolt effect it inflicts by 20% (+10% per stack)"
+      effect: "Enhances lightning damage and the stacking jolt effect it inflicts by 20% per stack"
    },
    {
       // Ice Enhance 6
       name: "Strange Ice Kama",
       count: 0,
       text: "A dark blue kama made of ice, etched into it's frozen handle is the word \"Squall\".",
-      effect: "Enhances ice damage and the stacking frost it inflicts by 20% (+10% per stack)"
+      effect: "Enhances ice damage and the stacking frost it inflicts by 20% per stack"
    },
    {
       // Fire Enhance 7
       name: "Phoenix Feather",
       count: 0,
       text: "It scalds the skin on contact, handle with care.",
-      effect: "Enhances fire damage by 40% (+20% per stack)"
+      effect: "Enhances fire damage by 30% per stack"
    },
    {
       // Poison Enhance 8
       name: "Hydra Teeth",
       count: 0,
       text: "WHERE ARE ALL OF THESE COMING FROM??? WHICH IDIOT DID THIS?????",
-      effect: "Enhances poison damage by 10% (+5% per stack) and makes it harder to dispel (base 35%, -5% per stack)"
+      effect: "Enhances poison damage by 15% per stack and makes it harder to dispel (base 35%, -5% per stack)"
+   },
+   {
+      // Speed Increase 9
+      name: "Winged Helmet",
+      count: 0,
+      text: "Said to have been worn by the god of swiftness",
+      effect: "Increase chance to dodge and initiate additional attacks by 10% per stack"
+   },
+   {
+      // Crit Damage 10
+      name: "Old Bayonet",
+      count: 0,
+      text: "How do you even use this? It looks like it needs to attach to something...",
+      effect: "Increase critical damage by 25% per stack"
+   },
+   {
+      // Crit Chance 11
+      name: "Monocle",
+      count: 0,
+      text: "\"Oh look at me I'm so dapper.\"",
+      effect: "Increase critical chance by 5% per stack"
    }
 ]
 /*
 Custom Item bonuses:
-change dodge chance, and crit chance to items
 increase weapon dmg
 */
 
 function chanceItem() {
    if (Math.random() > .7)
    {
-      whatItem = Math.floor(Math.random() * 9);
+      whatItem = Math.floor(Math.random() * 12);
       items[whatItem].count++;
-      if (items[0].count > 0) { xpBonus = 1.2 + .1 * (items[0].count - 1); }
-      if (items[1].count > 0) { goldBonus = 1.2 + .1 * (items[1].count - 1); }
-      if (items[2].count > 0) { defBonus = 5 * items[2].count; }
+      xpBonus = 1 + .2 * items[0].count;
+      goldBonus = 1 + .2 * items[1].count;
+      defBonus = 5 * items[2].count;
       leech = 10 * items[3].count;
       foodRegen = 10 + 5 * items[4].count;
-      if (items[5].count > 0) { lightningItemBuff = 1.1 + .1 * items[5].count; }
-      if (items[6].count > 0) { iceItemBuff = 1.1 + .1 * items[6].count; }
-      if (items[7].count > 0) { fireItemBuff = 1.2 + .2 * items[7].count; }
-      if (items[8].count > 0) { poisonItemBuff = 1.05 + .05 * items[8].count; }
+      lightningItemBuff = 1 + .2 * items[5].count;
+      iceItemBuff = 1 + .2 * items[6].count;
+      fireItemBuff = 1 + .3 * items[7].count;
+      poisonItemBuff = 1 + .15 * items[8].count;
       poisonDispelChance = .35 - .05 * items[8].count;
+      speedItemBuff = 1 + .1 * items[9].count;
+      critDmg = 2 + .25 * items[10].count;
+      critChance = .1 + .05 * items[11].count;
+      // pin
       text.innerText += " The " + monsters[fighting].name + " dropped a " + items[whatItem].name + "!\n\n" + items[whatItem].text;
       itemUnlock = true;
       updateLists();
@@ -1020,7 +1136,6 @@ function switchWeapon() {
    }
    innerUpdate(2);
    text.innerText = `You have swapped to your ${weapons[currentWeapon].name}`;
-   // pin
 }
 
 function defend() {
@@ -1075,7 +1190,7 @@ function playerAttack() {
       text.innerText = `You attack the ${monsters[fighting].name}, `;
       innerButtonAnnulment();
       numAttacks = weapons[currentWeapon].speed;
-      if (Math.random() < addAttChance * weapons[currentWeapon].speed) {
+      if (Math.random() < addAttChance * speedItemBuff * weapons[currentWeapon].speed) {
          numAttacks += Math.floor(1 + Math.random() * weapons[currentWeapon].speed / 2);
       }
       text.innerText += ` you attack ${numAttacks} times!`;
@@ -1083,7 +1198,7 @@ function playerAttack() {
       for (i = numAttacks; i > 0; i--) {
          if (isMonsterHit) {
             attDmg = Math.floor((weapons[currentWeapon].power * Math.pow(1.2, weapons[currentWeapon].upgrade)) * (1 + strength / 50) * rollAtt());
-            if (isCrit()) { attDmg *= (1 + critDmg / 100); }
+            if (isCrit()) { attDmg *= critDmg; }
             if (lightning) {
                attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 1) * (1.2 + jolt) * elementalDmgBuff * lightningItemBuff);
                jolt += .1 * lightningItemBuff * weapons[currentWeapon].buildup;
@@ -1194,7 +1309,7 @@ function isMonsterHit() {
 }
 
 function isPlayerHit() {
-   return Math.random() > dodgeChance;
+   return Math.random() > dodgeChance*speedItemBuff;
 }
 
 function defeatMonster() {
@@ -1245,88 +1360,6 @@ function winGame() {
    } else {
       text.innerText = "You've defeated the phantom, but it will return... You can't run forever...";
    }
-}
-
-function restart() {
-   xp = 0;
-   levelCost = 5;
-   maxHealth = 100;
-   health = maxHealth;
-   gold = 50;
-   currentWeapon = 0;
-   alternateWeapon = 1;
-   playerLevel = 1;
-   strength = 0;
-   def = 0;
-   critDmg = 100;
-   critChance = 0.1;
-   monMod = 1;
-   goldMult = 1;
-   dodgeChance = 0.1;
-   floor = 1;
-   procChance = .2;
-   foodRegen = 10;
-   addAttChance = .1;
-   elementalDmgBuff = 1;
-   frostMult = 1;
-   xpBonus = 1;
-   goldBonus = 1;
-   lightningItemBuff = 1;
-   iceItemBuff = 1;
-   fireItemBuff = 1;
-   poisonItemBuff = 1;
-   poison = false;
-   defending = false;
-   lightning = false;
-   ice = false;
-   fire = false;
-   bossOne = true;
-   bossTwo = true;
-   finalBoss = true;
-   fightingBoss = false;
-   procUnlock = false;
-   itemUnlock = false;
-   floor2Shop = false;
-   boughtSeconds = false;
-   boughtQuarter = false;
-   boughtSword = false;
-   boughtScimitars = false;
-   boughtGreatsword = false;
-   poisoned = false;
-   quick = true;
-   storage = 0;
-   defBonus = 0;
-   leech = 0;
-   poisonDmg = 0;
-   jolt = 0;
-   frost = 0;
-   lightningDmg = 0;
-   iceDmg = 0;
-   fireDmg = 0;
-   totalDmg = 0;
-   numAttacks = 0;
-   gambleNum = 0;
-   monsterHealth = 0;
-   fighting = 0;
-   monsterDif = "";
-   monDmg = 0;
-   attDmg = 0;
-   whatItem = 0;
-
-   //items[0].count = items.length;
-   for (i = items.length - 1; i >= 0; i--)
-   {
-      items[i].count = 0;
-   }
-
-   button4.style.display = "inline";
-
-   healthText.innerText = `${health}/${maxHealth}`;
-   xpText.innerText = `${xp}/${levelCost}`;
-   goldText.innerText = gold;
-   levelingText.innerText = "Level: " + playerLevel;
-   goTown();
-   text.innerText = "Welcome to Dungeon Defeater! The town has been experiencing monster attacks leaking out of the dungeon. The town's defenses are crumbling! Go in and take the fight to the source of the trouble! Armed with a stick and a rock, you must progress through the dungeon to try and find a way to stop the invading monsters!";
 }
 
 function easterEgg() {
