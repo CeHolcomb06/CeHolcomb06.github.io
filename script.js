@@ -28,7 +28,7 @@ let lightningItemBuff = 1;
 let iceItemBuff = 1;
 let fireItemBuff = 1;
 let poisonItemBuff = 1;
-let poisonDispelChance = .5;
+let poisonDecay = .4;
 let speedItemBuff = 1;
 let poison = false;
 let defending = false;
@@ -37,6 +37,8 @@ let ice = false;
 let fire = false;
 let bossOne = true;
 let bossTwo = true;
+let bossThree = true;
+let bossFour = true;
 let finalBoss = true;
 let fightingBoss = false;
 let procUnlock = false;
@@ -51,6 +53,7 @@ let poisoned = false;
 let quick = true;
 let tutorial = true;
 let tutorial2 = false;
+let firstStrike = true;
 let storage = 0;
 let defBonus = 0;
 let leech = 0;
@@ -100,7 +103,7 @@ function restart() {
     iceItemBuff = 1;
     fireItemBuff = 1;
     poisonItemBuff = 1;
-    poisonDispelChance = .5;
+    poisonDecay = .4;
     speedItemBuff = 1;
     poison = false;
     defending = false;
@@ -109,6 +112,8 @@ function restart() {
     fire = false;
     bossOne = true;
     bossTwo = true;
+    bossThree = true;
+    bossFour = true;
     finalBoss = true;
     fightingBoss = false;
     procUnlock = false;
@@ -252,10 +257,10 @@ const weapons = [
    { name: 'rock', power: 6, buildup: 3, speed: 1, upgrade: 0, price: 0},
    { name: 'dagger', power: 4, buildup: 5, speed: 2, upgrade: 0, price: 200 },
    { name: 'axe', power: 10, buildup: 4, speed: 1, upgrade: 0, price: 200 },
-   { name: 'quarterstaff', power: 6, buildup: 9, speed: 3, upgrade: 0, price: 750 },
-   { name: 'sword', power: 20, buildup: 14, speed: 1, upgrade: 0, price: 750 },
-   { name: 'scimitars', power: 8, buildup: 15, speed: 4, upgrade: 0, price: 2000 },
-   { name: 'greatsword', power: 44, buildup: 17, speed: 1, upgrade: 0, price: 2000 }
+   { name: 'quarterstaff', power: 6, buildup: 9, speed: 3, upgrade: 0, price: 1300 },
+   { name: 'sword', power: 20, buildup: 14, speed: 1, upgrade: 0, price: 1300 },
+   { name: 'scimitars', power: 8, buildup: 15, speed: 4, upgrade: 0, price: 4750 },
+   { name: 'greatsword', power: 44, buildup: 17, speed: 1, upgrade: 0, price: 4750 }
 ];
 
 // MONSTERS
@@ -624,6 +629,8 @@ function updateLists() {
    bayDesc.innerText = items[10].effect;
    monocleCount.innerText = items[11].count;
    monocleDesc.innerText = items[11].effect;
+
+   updateItems();
 }
 
 function viewItems() {
@@ -770,7 +777,7 @@ let items = [
       name: "Hydra Teeth",
       count: 0,
       text: "WHERE ARE ALL OF THESE COMING FROM??? WHICH IDIOT DID THIS?????",
-      effect: "Enhances poison damage by 15% per stack and makes it harder to dispel (base 35%, -5% per stack)"
+      effect: "Enhances poison damage by 15% per stack and makes it decay slower (60% decay per turn normally, +5% kept each stack at a maximum of 90% kept"
    },
    {
       // Speed Increase 9
@@ -804,25 +811,31 @@ function chanceItem() {
    {
       whatItem = Math.floor(Math.random() * 12);
       items[whatItem].count++;
-      xpBonus = 1 + .2 * items[0].count;
-      goldBonus = 1 + .2 * items[1].count;
-      defBonus = 5 * items[2].count;
-      leech = 10 * items[3].count;
-      foodRegen = 10 + 5 * items[4].count;
-      lightningItemBuff = 1 + .2 * items[5].count;
-      iceItemBuff = 1 + .2 * items[6].count;
-      fireItemBuff = 1 + .3 * items[7].count;
-      poisonItemBuff = 1 + .15 * items[8].count;
-      poisonDispelChance = .35 - .05 * items[8].count;
-      speedItemBuff = 1 + .1 * items[9].count;
-      critDmg = 2 + .25 * items[10].count;
-      critChance = .2 + .05 * items[11].count;
+      updateItems();
       // pin
       text.innerText += " The " + monsters[fighting].name + " dropped a " + items[whatItem].name + "!\n\n" + items[whatItem].text;
       itemUnlock = true;
       updateLists();
    }
 }
+
+function updateItems() {
+   xpBonus = 1 + .2 * items[0].count;
+   goldBonus = 1 + .2 * items[1].count;
+   defBonus = 5 * items[2].count;
+   leech = 10 * items[3].count;
+   foodRegen = 10 + 5 * items[4].count;
+   lightningItemBuff = 1 + .2 * items[5].count;
+   iceItemBuff = 1 + .2 * items[6].count;
+   fireItemBuff = 1 + .3 * items[7].count;
+   poisonItemBuff = 1 + .15 * items[8].count;
+   poisonDecay = .5 + .05 * items[8].count;
+   if (poisonDecay < .9) { poisonDecay = .9;}
+   speedItemBuff = 1 + .1 * items[9].count;
+   critDmg = 2 + .25 * items[10].count;
+   critChance = .2 + .05 * items[11].count;
+}
+
 function buyHealth() {
    if (gold >= 10) {
       if (health != maxHealth) {
@@ -1196,7 +1209,7 @@ function addPoison() {
    text.innerText = "You imbue your weapon with deadly poison!";
    if (tutorial)
    {
-      text.innerText += "\n\nPoison adds some damage over time to the enemy. however it has the chance to dispel whenever the enemy attacks (35% chance to dispel). Quick weapons apply more poison overall than heavy weapons.";
+      text.innerText += "\n\nPoison adds some damage over time to the enemy. however it's damage decays over time (-60% per turn). Quick weapons apply more poison overall than heavy weapons.";
    }
 }
 
@@ -1323,10 +1336,7 @@ function monsterAttack() {
    if (poisoned) {
       monsterHealth -= poisonDmg;
       text.innerText += ` The ${monsters[fighting].name} takes ${poisonDmg} damage from poison!`;
-      if (Math.random() > poisonDispelChance) {
-         poisoned = false;
-         poisonDmg = 0;
-         text.innerText += ` It's no longer poisoned.`;
+      poisonDmg = Math.floor(poisonDmg * poisonDecay);
       }
       monsterHealthText.innerText = monsterHealth;
    }
@@ -1337,7 +1347,6 @@ function monsterAttack() {
          innerUpdate(2);
          focusImage.onclick = playerAttack;
       }
-}
 
 function isCrit() {
    if (Math.random() > critChance)
