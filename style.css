@@ -40,11 +40,19 @@ body {
   background-image: linear-gradient(lightblue, pink);
 }
 
+.inStat {
+  
+}
+
 #itemList {
   display: none;
   border: 1px solid #0a0a23;
   color: black;
   background-image: linear-gradient(lightblue, #ec797c);
+}
+
+.item {
+
 }
 
 #monsterStats {
