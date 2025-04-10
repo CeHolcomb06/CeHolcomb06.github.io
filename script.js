@@ -16,12 +16,12 @@ let critChance = 0.2;
 let monMod = 1;
 let goldMult = 1;
 let dodgeChance = 0.1;
+let dodgeBaseChance = .1;
 let floor = 1;
 let procChance = .2;
 let foodRegen = 10;
 let addAttChance = .1;
 let elementalDmgBuff = 1;
-let frostMult = 1;
 let xpBonus = 1;
 let goldBonus = 1;
 let lightningItemBuff = 1;
@@ -30,6 +30,19 @@ let fireItemBuff = 1;
 let poisonItemBuff = 1;
 let poisonDecay = .4;
 let speedItemBuff = 1;
+let itemChance = .7;
+let itemZero = false;
+let itemOne = false;
+let itemTwo = false;
+let itemThree = false;
+let itemFour = false;
+let itemFive = false;
+let itemSix = false;
+let itemSeven = false;
+let itemEight = false;
+let itemNine = false;
+let itemTen = false;
+let itemEleven = false;
 let poison = false;
 let defending = false;
 let lightning = false;
@@ -53,7 +66,6 @@ let poisoned = false;
 let quick = true;
 let tutorial = true;
 let tutorial2 = false;
-let firstStrike = true;
 let storage = 0;
 let defBonus = 0;
 let leech = 0;
@@ -91,12 +103,12 @@ function restart() {
     monMod = 1;
     goldMult = 1;
     dodgeChance = 0.1;
+    dodgeBaseChance = .1;
     floor = 1;
     procChance = .2;
     foodRegen = 10;
     addAttChance = .1;
     elementalDmgBuff = 1;
-    frostMult = 1;
     xpBonus = 1;
     goldBonus = 1;
     lightningItemBuff = 1;
@@ -221,6 +233,19 @@ const elemDmgBonus = document.querySelector("#elemDmgBonus");
 const itemList = document.querySelector("#itemList");
 const itemShow = document.querySelector("#itemShow");
 
+const sapRing = document.querySelector("#sapRing");
+const goldScar = document.querySelector("#goldScar");
+const repScrap = document.querySelector("#repScrap");
+const bloodPen = document.querySelector("#bloodPen");
+const dwarfCharm = document.querySelector("#dwarfCharm");
+const arc = document.querySelector("#arc");
+const kama = document.querySelector("#kama");
+const feather = document.querySelector("#feather");
+const hydraTeeth = document.querySelector("#hydraTeeth");
+const wingHelm = document.querySelector("#wingHelm");
+const bay = document.querySelector("#bay");
+const monocle = document.querySelector("#monocle");
+
 const sapRingCount = document.querySelector("#sapRingCount");
 const sapRingDesc = document.querySelector("#sapRingDesc");
 const goldScarCount = document.querySelector("#goldScarCount");
@@ -256,12 +281,13 @@ const weapons = [
    { name: 'stick', power: 2, buildup: 2, speed: 3, upgrade: 0, price: 0},
    { name: 'rock', power: 6, buildup: 3, speed: 1, upgrade: 0, price: 0},
    { name: 'dagger', power: 4, buildup: 5, speed: 2, upgrade: 0, price: 200 },
-   { name: 'axe', power: 10, buildup: 4, speed: 1, upgrade: 0, price: 200 },
+   { name: 'axe', power: 10, buildup: 7, speed: 1, upgrade: 0, price: 200 },
    { name: 'quarterstaff', power: 6, buildup: 9, speed: 3, upgrade: 0, price: 1300 },
    { name: 'sword', power: 20, buildup: 14, speed: 1, upgrade: 0, price: 1300 },
    { name: 'scimitars', power: 8, buildup: 15, speed: 4, upgrade: 0, price: 4750 },
    { name: 'greatsword', power: 44, buildup: 17, speed: 1, upgrade: 0, price: 4750 }
 ];
+// pin; reworking elemental buildups
 
 // MONSTERS
 const monsters = [
@@ -279,7 +305,7 @@ const monsters = [
       // 1
       name: "Tusked Boar",
       level: 3,
-      health: 100,
+      health: 120,
       difficulty: "Hard",
       image: "images/boar.jpeg"
    },
@@ -297,7 +323,7 @@ const monsters = [
       // 3
       name: "Giant Beetle",
       level: 2,
-      health: 55,
+      health: 60,
       difficulty: "Medium",
       image: "images/bug.jpeg"
    },
@@ -306,7 +332,7 @@ const monsters = [
       // 4
       name: "Flower Mimic",
       level: 7,
-      health: 230,
+      health: 340,
       difficulty: "Easy",
       image: "images/flower.png"
    },
@@ -324,7 +350,7 @@ const monsters = [
       // 6
       name: "Small Stone Golem",
       level: 9,
-      health: 550,
+      health: 700,
       difficulty: "Medium",
       image: "images/smallStoneGolem.jpeg"
    },
@@ -333,7 +359,7 @@ const monsters = [
       // 7
       name: "Massive Bearded Dragon",
       level: 15,
-      health: 800,
+      health: 1500,
       difficulty: "Second Boss",
       image: "images/giantBeardedDragon.jpeg"
    },
@@ -342,7 +368,7 @@ const monsters = [
       // 8
       name: "Insane Adventurer",
       level: 12,
-      health: 400,
+      health: 550,
       difficulty: "Hard",
       image: "images/insaneMan.jpeg"
    },
@@ -351,7 +377,7 @@ const monsters = [
       // 9
       name: "Fire Elemental",
       level: 17,
-      health: 700,
+      health: 1700,
       difficulty: "Easy",
       image: "images/fireElemental.jpeg"
    },
@@ -360,7 +386,7 @@ const monsters = [
       // 10
       name: "Large Stone Golem",
       level: 20,
-      health: 1250,
+      health: 3000,
       difficulty: "Medium",
       image: "images/largeStoneGolem.jpeg"
    },
@@ -369,7 +395,7 @@ const monsters = [
       // 11
       name: "Lava Lizard",
       level: 24,
-      health: 1000,
+      health: 2600,
       difficulty: "Hard",
       image: "images/lavaLizard.jpeg"
    },
@@ -378,7 +404,7 @@ const monsters = [
       // 12
       name: "Red Dragon",
       level: 30,
-      health: 4000,
+      health: 10000,
       difficulty: "FINAL BOSS",
       image: "images/redDragon.jpeg"
    },
@@ -387,7 +413,7 @@ const monsters = [
       // 13
       name: "The Ghost of Red Dragon",
       level: 50,
-      health: 10000,
+      health: 100000,
       difficulty: "Good Luck",
       image: "images/redPhantom.jpeg"
    }
@@ -398,8 +424,8 @@ const locations = [
    {
       // 0
       name: "town square",
-      "button text": ["Go to store", "Go to dungeon", "Go to item store"],
-      "button functions": [goStore, goDung, itemStore],
+      "button text": ["Go to store", "Go to dungeon", "Go to next town (no going back)"],
+      "button functions": [goStore, goDung, nextArea],
       text: "You are in the town square. You see a sign that says \"Store\"."
    },
    {
@@ -491,10 +517,10 @@ const innerLocations = [
    {
       // 1
       name: "inner level up",
-      text: ["Strength +5",
-         "Defense +5, Max Health +50",
-         "Elemental Damage +10%", "Dodge Chance +5%, Extra Attack Chance +5%", "", ""],
-      functions: [dmgBuff, defenseBuff, elemBuff, speedBuff, null, null],
+      text: ["Strength +10",
+         "Defense +10",
+         "Max Health X1.25", "Elemental Damage: +20%", "Dodge Chance +5%, Extra Attack Chance +5%", ""],
+      functions: [dmgBuff, defenseBuff, HPBuff, elemBuff, speedBuff, null],
       background: "lightblue"
    },
    {
@@ -570,7 +596,7 @@ function innerUpdate(num) {
 
    if (num == 1)
    {
-      if (dodgeChance > .35) { innerButton4.innerText = "Extra Attack Chance +5%"; }
+      if (dodgeBaseChance > .35) { innerButton5.innerText = "Extra Attack Chance +5%"; }
    }
 
    if (num == 2) {
@@ -601,10 +627,46 @@ function updateLists() {
    defStat.innerText = Math.floor(def);
    critCStat.innerText = Math.floor(critChance*100) + "%";
    critDStat.innerText = Math.floor(critDmg*100) + "%";
-   dodgeStat.innerText = Math.floor(dodgeChance*100*speedItemBuff) + "%";
+   dodgeStat.innerText = Math.floor(dodgeChance*100) + "%";
    addAttStat.innerText = Math.floor(addAttChance*100*speedItemBuff) + "%";
    elemDmgBonus.innerText = Math.floor(elementalDmgBuff*100) + "%";
 
+   if (itemZero) {
+      sapRing.style.display = "flex";
+   } else { sapRing.style.display = "none"; }
+   if (itemOne) {
+      goldScar.style.display = "flex";
+   } else { goldScar.style.display = "none"; }
+   if (itemTwo) {
+      repScrap.style.display = "flex";
+   } else { repScrap.style.display = "none"; }
+   if (itemThree) {
+      bloodPen.style.display = "flex";
+   } else { bloodPen.style.display = "none"; }
+   if (itemFour) {
+      dwarfCharm.style.display = "flex";
+   } else { dwarfCharm.style.display = "none"; }
+   if (itemFive) {
+      arc.style.display = "flex";
+   } else { arc.style.display = "none"; }
+   if (itemSix) {
+      kama.style.display = "flex";
+   } else { kama.style.display = "none"; }
+   if (itemSeven) {
+      feather.style.display = "flex";
+   } else { feather.style.display = "none"; }
+   if (itemEight) {
+      hydraTeeth.style.display = "flex";
+   } else { hydraTeeth.style.display = "none"; }
+   if (itemNine) {
+      wingHelm.style.display = "flex";
+   } else { wingHelm.style.display = "none"; }
+   if (itemTen) {
+      bay.style.display = "flex";
+   } else { bay.style.display = "none"; }
+   if (itemEleven) {
+      monocle.style.display = "flex";
+   } else { monocle.style.display = "none"; }
    sapRingCount.innerText = items[0].count;
    sapRingDesc.innerText = items[0].effect;
    goldScarCount.innerText = items[1].count;
@@ -630,6 +692,7 @@ function updateLists() {
    monocleCount.innerText = items[11].count;
    monocleDesc.innerText = items[11].effect;
 
+   dodgeChance = dodgeBaseChance*speedItemBuff;
    updateItems();
 }
 
@@ -659,9 +722,9 @@ function goTown() {
       button4.style.display = "none";
       tutorial2 = false;
    }
-   if (itemUnlock) {
+   if (!finalBoss) {
       button3.style.display = "inline";
-      text.innerText += " You can also see a more hidden building that says store on it but in a fancier font.";
+      text.innerText += "\n\nAnother town has made a call about a dungeon terrorizing their town.";
    } else { button3.style.display = "none"; }
 }
 
@@ -693,6 +756,8 @@ function goFloor() {
    fire = false;
    ice = false;
    poison = false;
+   poisonDmg = 0;
+   poisoned = false;
    button4.style.display = "inline";
    focusMenu.style.display = "none";
    fightingBoss = false;
@@ -707,8 +772,9 @@ function goFloor() {
    }
 }
 
-function itemStore() {
-   update(locations[9]);
+function nextArea() {
+   text.innerText = "This is incomplete, update 1.3 coming!";
+   // pin; New areas
 }
 
 function specialStore() {
@@ -807,15 +873,43 @@ increase weapon dmg
 */
 
 function chanceItem() {
-   if (Math.random() > .7)
+   /*if (floor == 1) {
+      if (bossOne) {
+         itemChance = .7;
+      } else if (bossTwo) {
+         itemChance = .85;
+      } else { itemChance = 1; }
+   } else if (floor == 2;) {
+      if (bossTwo) {
+         itemChance = .7;
+      } else if (bossOne) {
+         itemChance = .85;
+      } else { itemChance = 1; }
+   } else if (floor == 3) {
+      itemChance = .7;
+      // pin; expand when new floors are introduced
+   }*/
+   // ^ error, don't know what's wrong
+   if (Math.random() > itemChance)
    {
       whatItem = Math.floor(Math.random() * 12);
       items[whatItem].count++;
       updateItems();
-      // pin
       text.innerText += " The " + monsters[fighting].name + " dropped a " + items[whatItem].name + "!\n\n" + items[whatItem].text;
       itemUnlock = true;
       updateLists();
+      if (whatItem == 0) { itemZero = true; }
+      if (whatItem == 1) { itemOne = true; }
+      if (whatItem == 2) { itemTwo = true; }
+      if (whatItem == 3) { itemThree = true; }
+      if (whatItem == 4) { itemFour = true; }
+      if (whatItem == 5) { itemFive = true; }
+      if (whatItem == 6) { itemSix = true; }
+      if (whatItem == 7) { itemSeven = true; }
+      if (whatItem == 8) { itemEight = true; }
+      if (whatItem == 9) { itemNine = true; }
+      if (whatItem == 10) { itemTen = true; }
+      if (whatItem == 11) { itemEleven = true; }
    }
 }
 
@@ -1066,24 +1160,28 @@ function levelUpReturn() {
 }
 
 function defenseBuff() {
-   def += 5;
-   maxHealth += 50;
+   def += 10;
+   levelUpReturn();
+}
+
+function HPBuff() {
+   maxHealth = Math.floor(maxHealth * 1.25);
    healthText.innerText = `${health}/${maxHealth}`;
    levelUpReturn();
 }
 
 function dmgBuff() {
-   strength += 5;
+   strength += 10;
    levelUpReturn();
 }
 
 function elemBuff() {
-   elementalDmgBuff += .1;
+   elementalDmgBuff += .2;
    levelUpReturn();
 }
 
 function speedBuff() {
-   if (dodgeChance <= .35) { dodgeChance += .05; }
+   if (dodgeBaseChance <= .35) { dodgeBaseChance += .05; }
    addAttChance += .05;
    levelUpReturn();
 }
@@ -1272,7 +1370,7 @@ function playerAttack() {
          if (isMonsterHit || tutorial) {
             attDmg = Math.floor((weapons[currentWeapon].power * Math.pow(1.2, weapons[currentWeapon].upgrade)) * (1 + strength / 50) * rollAtt());
             if (isCrit()) {
-               attDmg *= critDmg;
+               attDmg = Math.floor(attDmg * critDmg);
                text.innerText += " A critical hit!";
             }
             if (lightning) {
@@ -1282,14 +1380,14 @@ function playerAttack() {
             if (ice) {
                attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 1) * 1.2 * elementalDmgBuff * iceItemBuff);
                if (quick) {
-                  frost = Math.floor((attDmg*1.2) * frostMult * iceItemBuff * weapons[currentWeapon].buildup/1.7);
+                  frost = Math.floor((attDmg*1.2) * iceItemBuff * weapons[currentWeapon].buildup/1.7);
                } else {
-                  frost = Math.floor((attDmg*1.2) * frostMult * iceItemBuff * weapons[currentWeapon].buildup);
+                  frost = Math.floor((attDmg*1.2) * iceItemBuff * weapons[currentWeapon].buildup);
                }
             }
             if (fire) {
                if (frost >= monsters[fighting].health/2) {
-                  attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 2) * (1 + frost/2 / monsters[fighting].health) * 1.4 * elementalDmgBuff * fireItemBuff);
+                  attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 2) * (1 + frost * 1.3 / monsters[fighting].health) * 1.4 * elementalDmgBuff * fireItemBuff);
                   text.innerText += ` The fire shatters the frost of the ${monsters[fighting].name}, `;
                   frost = 0;
                } else {
@@ -1299,7 +1397,7 @@ function playerAttack() {
             }
             if (poison) {
                if (quick) {
-                  poisonDmg += Math.floor((attDmg/7+1) * Math.pow(1.2, weapons[currentWeapon].upgrade) * poisonItemBuff * weapons[currentWeapon].buildup/2);
+                  poisonDmg += Math.floor((attDmg/7+1) * Math.pow(1.2, weapons[currentWeapon].upgrade) * poisonItemBuff * weapons[currentWeapon].buildup);
                } else {
                   poisonDmg += Math.floor((attDmg/7+1) * Math.pow(1.2, weapons[currentWeapon].upgrade) * poisonItemBuff * weapons[currentWeapon].buildup/4);
                }
@@ -1325,13 +1423,20 @@ function playerAttack() {
 
 function monsterAttack() {
    text.innerText += "\n The " + monsters[fighting].name + " attacks, ";
-   if (isPlayerHit()) {
+   if (!defending) {
+      if (isPlayerHit()) {
+         getMonsterAttackValue(monsters[fighting].level);
+         health -= monDmg;
+         healthText.innerText = `${health}/${maxHealth}`;
+         text.innerText += ` it did ${monDmg} damage to you!`;
+      } else {
+         text.innerText += " you dodged it's attack!";
+      }
+   } else {
       getMonsterAttackValue(monsters[fighting].level);
       health -= monDmg;
       healthText.innerText = `${health}/${maxHealth}`;
       text.innerText += ` it did ${monDmg} damage to you!`;
-   } else {
-      text.innerText += " you dodged it's attack!";
    }
    if (poisoned) {
       monsterHealth -= poisonDmg;
@@ -1339,7 +1444,6 @@ function monsterAttack() {
       poisonDmg = Math.floor(poisonDmg * poisonDecay);
       }
       monsterHealthText.innerText = monsterHealth;
-   }
    if (health <= 0)
       {
          lose();
@@ -1347,6 +1451,7 @@ function monsterAttack() {
          innerUpdate(2);
          focusImage.onclick = playerAttack;
       }
+}
 
 function isCrit() {
    if (Math.random() > critChance)
@@ -1360,7 +1465,7 @@ function rollAtt() {
 }
 
 function getMonsterAttackValue(level) {
-   monDmg = Math.floor((level * 7 - def / 50) * (1 - def / (def + 1000)) * rollAtt() - defBonus);
+   monDmg = Math.floor((level * 10 - def / 50) * (1 - def / (def + 1000)) * rollAtt() - defBonus);
    if (frost >= monsters[fighting].health/2) {
       monDmg = Math.floor(monDmg/1.7);
       text.innerText += ` it's frosted, reducing it's damage;`;
@@ -1398,8 +1503,10 @@ function defeatMonster() {
       gold += 1000 * goldBonus;
    } else { gold += Math.floor(Math.pow(monsters[fighting].level, 1.4) * 8 * goldBonus); }
    if (monsters[fighting].level > 1 && fighting != 5) {
-      xp += Math.floor((Math.pow(monsters[fighting].level, 1.4) + 1) * xpBonus);
-   } else  if (!tutorial) { xp += 2 * xpBonus; }
+      xp += Math.floor((Math.pow(monsters[fighting].level, 1.2) + 1) * xpBonus);
+   } else if (fightingBoss) {
+      xp += Math.floor((Math.pow(monsters[fighting].level, 1.2) + 1) * 2 * xpBonus);
+   } else if (!tutorial) { xp += 2 * xpBonus; }
    else { xp += 5; }
    if (bossOne && fightingBoss) {
       bossOne = false;
