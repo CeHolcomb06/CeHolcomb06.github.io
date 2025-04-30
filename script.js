@@ -31,6 +31,7 @@ let poisonItemBuff = 1;
 let poisonDecay = .4;
 let speedItemBuff = 1;
 let itemChance = .7;
+let map = 1;
 let itemZero = false;
 let itemOne = false;
 let itemTwo = false;
@@ -96,67 +97,68 @@ function restart() {
    quickWeapon = 0;
    heavyWeapon = 1;
    playerLevel = 1;
-    strength = 0;
-    def = 0;
-    critDmg = 2;
-    critChance = 0.2;
-    monMod = 1;
-    goldMult = 1;
-    dodgeChance = 0.1;
-    dodgeBaseChance = .1;
-    floor = 1;
-    procChance = .2;
-    foodRegen = 10;
-    addAttChance = .1;
-    elementalDmgBuff = 1;
-    xpBonus = 1;
-    goldBonus = 1;
-    lightningItemBuff = 1;
-    iceItemBuff = 1;
-    fireItemBuff = 1;
-    poisonItemBuff = 1;
-    poisonDecay = .4;
-    speedItemBuff = 1;
-    poison = false;
-    defending = false;
-    lightning = false;
-    ice = false;
-    fire = false;
-    bossOne = true;
-    bossTwo = true;
-    bossThree = true;
-    bossFour = true;
-    finalBoss = true;
-    fightingBoss = false;
-    procUnlock = false;
-    itemUnlock = false;
-    floor2Shop = false;
-    boughtSeconds = false;
-    boughtQuarter = false;
-    boughtSword = false;
-    boughtScimitars = false;
-    boughtGreatsword = false;
-    poisoned = false;
-    quick = true;
-    tutorial = false;
-    storage = 0;
-    defBonus = 0;
-    leech = 0;
-    poisonDmg = 0;
-    jolt = 0;
-    frost = 0;
-    lightningDmg = 0;
-    iceDmg = 0;
-    fireDmg = 0;
-    totalDmg = 0;
-    numAttacks = 0;
-    gambleNum = 0;
-    monsterHealth = 0;
-    fighting = 0;
-    monsterDif = "";
-    monDmg = 0;
-    attDmg = 0;
-    whatItem = 0;
+   strength = 0;
+   def = 0;
+   critDmg = 2;
+   critChance = 0.2;
+   monMod = 1;
+   goldMult = 1;
+   dodgeChance = 0.1;
+   dodgeBaseChance = .1;
+   floor = 1;
+   procChance = .2;
+   foodRegen = 10;
+   addAttChance = .1;
+   elementalDmgBuff = 1;
+   xpBonus = 1;
+   goldBonus = 1;
+   lightningItemBuff = 1;
+   iceItemBuff = 1;
+   fireItemBuff = 1;
+   poisonItemBuff = 1;
+   poisonDecay = .4;
+   speedItemBuff = 1;
+   map = 1;
+   poison = false;
+   defending = false;
+   lightning = false;
+   ice = false;
+   fire = false;
+   bossOne = true;
+   bossTwo = true;
+   bossThree = true;
+   bossFour = true;
+   finalBoss = true;
+   fightingBoss = false;
+   procUnlock = false;
+   itemUnlock = false;
+   floor2Shop = false;
+   boughtSeconds = false;
+   boughtQuarter = false;
+   boughtSword = false;
+   boughtScimitars = false;
+   boughtGreatsword = false;
+   poisoned = false;
+   quick = true;
+   tutorial = false;
+   storage = 0;
+   defBonus = 0;
+   leech = 0;
+   poisonDmg = 0;
+   jolt = 0;
+   frost = 0;
+   lightningDmg = 0;
+   iceDmg = 0;
+   fireDmg = 0;
+   totalDmg = 0;
+   numAttacks = 0;
+   gambleNum = 0;
+   monsterHealth = 0;
+   fighting = 0;
+   monsterDif = "";
+   monDmg = 0;
+   attDmg = 0;
+   whatItem = 0;
 
    for (i = items.length - 1; i >= 0; i--)
    {
@@ -180,7 +182,7 @@ Custom Item bonuses:
 Monster health decrease (min 25%)?
 Monster damage decrease (min 50%)?
 Multiply weapon damage
-proc items (bleed, ignite, shock, freeze)
+proc items (bleed, ignite)
 
 Monster Ideas:
 Living Armor (Special)
@@ -280,12 +282,12 @@ focusMenu.style.display = "none";
 const weapons = [
    { name: 'stick', power: 2, speed: 3, upgrade: 0, price: 0},
    { name: 'rock', power: 6, speed: 1, upgrade: 0, price: 0},
-   { name: 'dagger', power: 4, speed: 3, upgrade: 0, price: 200 },
-   { name: 'axe', power: 10, speed: 1, upgrade: 0, price: 200 },
-   { name: 'quarterstaff', power: 6, speed: 3, upgrade: 0, price: 1000 },
-   { name: 'sword', power: 20, speed: 1, upgrade: 0, price: 1000 },
-   { name: 'scimitars', power: 8, speed: 4, upgrade: 0, price: 4000 },
-   { name: 'greatsword', power: 44, speed: 1, upgrade: 0, price: 4000 }
+   { name: 'dagger', power: 3, speed: 3, upgrade: 0, price: 350 },
+   { name: 'axe', power: 10, speed: 1, upgrade: 0, price: 350 },
+   { name: 'quarterstaff', power: 6, speed: 3, upgrade: 0, price: 1300 },
+   { name: 'sword', power: 20, speed: 1, upgrade: 0, price: 1300 },
+   { name: 'scimitars', power: 8, speed: 4, upgrade: 0, price: 4750 },
+   { name: 'greatsword', power: 44, speed: 1, upgrade: 0, price: 4750 }
 ];
 
 // MONSTERS
@@ -302,20 +304,20 @@ const monsters = [
    {
       // floor 1
       // 1
-      name: "Tusked Boar",
-      level: 3,
-      health: 120,
-      difficulty: "Hard",
-      image: "images/boar.jpeg"
-   },
-   {
-      // floor 1
-      // 2
       name: "Giant Beetle",
       level: 2,
       health: 60,
       difficulty: "Medium",
       image: "images/bug.jpeg"
+   },
+   {
+      // floor 1
+      // 2
+      name: "Tusked Boar",
+      level: 3,
+      health: 120,
+      difficulty: "Hard",
+      image: "images/boar.jpeg"
    },
    {
       // floor 1 boss
@@ -338,7 +340,7 @@ const monsters = [
    {
       // floor 2
       // 5
-      name: "Armored Skeleton",
+      name: "Small Stone Golem",
       level: 9,
       health: 700,
       difficulty: "Medium",
@@ -365,112 +367,77 @@ const monsters = [
    {
       // floor 3
       // 8
-      name: "Slime",
-      level: 1,
-      health: 25,
-      difficulty: "Easy",
-      image: "images/slime.jpeg"
-   },
-   {
-      // floor 3
-      // 9
-      name: "Slime",
-      level: 1,
-      health: 25,
-      difficulty: "Easy",
-      image: "images/slime.jpeg"
-   },
-   {
-      // floor 3
-      // 10
-      name: "Slime",
-      level: 1,
-      health: 25,
-      difficulty: "Easy",
-      image: "images/slime.jpeg"
-   },
-   {
-      // floor 3 boss
-      // 11
-      name: "Slime",
-      level: 1,
-      health: 25,
-      difficulty: "Easy",
-      image: "images/slime.jpeg"
-   },
-   {
-      // floor 4
-      // 12
-      name: "Slime",
-      level: 1,
-      health: 25,
-      difficulty: "Easy",
-      image: "images/slime.jpeg"
-   },
-   {
-      // floor 4
-      // 13
-      name: "Slime",
-      level: 1,
-      health: 25,
-      difficulty: "Easy",
-      image: "images/slime.jpeg"
-   },
-   {
-      // floor 4
-      // 14
-      name: "Slime",
-      level: 1,
-      health: 25,
-      difficulty: "Easy",
-      image: "images/slime.jpeg"
-   },
-   {
-      // floor 4 boss
-      // 15
-      name: "Red Dragon",
-      level: 0,
-      health: 0,
-      difficulty: "",
-      image: "images/redDragon.jpeg"
-   },
-   {
-      // floor 5
-      // 16
       name: "Fire Elemental",
-      level: 0,
-      health: 0,
+      level: 17,
+      health: 1700,
       difficulty: "Easy",
       image: "images/fireElemental.jpeg"
    },
    {
-      // floor 5
-      // 17
-      name: "Slime",
-      level: 1,
-      health: 25,
-      difficulty: "Easy",
-      image: "images/slime.jpeg"
+      // floor 3
+      // 9
+      name: "Large Stone Golem",
+      level: 20,
+      health: 3000,
+      difficulty: "Medium",
+      image: "images/largeStoneGolem.jpeg"
    },
    {
-      // floor 5
-      // 18
+      // floor 3
+      // 10
       name: "Lava Lizard",
-      level: 0,
-      health: 0,
+      level: 24,
+      health: 2600,
       difficulty: "Hard",
       image: "images/lavaLizard.jpeg"
    },
    {
-      // floor 5 boss
-      // 19
-      name: "Slime",
+      // floor 3 boss
+      // 11
+      name: "Red Dragon",
+      level: 30,
+      health: 10000,
+      difficulty: "FINAL BOSS",
+      image: "images/redDragon.jpeg"
+   },
+   {
+      // floor 1(2)
+      // 12
+      name: "",
       level: 1,
-      health: 25,
+      health: 1,
       difficulty: "Easy",
-      image: "images/slime.jpeg"
+      image: ""
+   },
+   {
+      // floor 1(2)
+      // 13
+      name: "",
+      level: 1,
+      health: 1,
+      difficulty: "Medium",
+      image: ""
+   },
+   {
+      // floor 1(2)
+      // 14
+      name: "",
+      level: 1,
+      health: 1,
+      difficulty: "Hard",
+      image: ""
+   },
+   {
+      // floor 1(2)
+      // 15
+      name: "",
+      level: 1,
+      health: 1,
+      difficulty: "Fourth Boss",
+      image: ""
    }
 ];
+// pin; Change the appropriate values for toFloor and goDeeper
 
 // LOCATIONS
 const locations = [
@@ -547,16 +514,24 @@ const locations = [
    {
       // 10
       name: "Final Floor",
-      "button text": ["Fight monster", "Enter the manor", "Go to town square"],
+      "button text": ["Fight monster", "Fight final boss", "Go to town square"],
       "button functions": [monsterSearch, goDeeper, goTown],
-      text: "The final floor, the air grows chill, freezing your very breath. The lord waiting in the golden manor at the floor's edge, embedded in the colossal wall.";
+      text: "You have reached the thrid and final floor, the master of the dungeon lurks nearby..."
    },
    {
       // 11
-      name: "Golden Manor",
-      "button text": ["Fight monster", "Turn Back", ""],
-      "button functions": [monsterSearch, goTown, null],
-      text: "The manor is grand, incredibly large, and monsters roam freely within these golden halls. A door, clearly leading to a throne room, is at the end of a hall, riddled with powerful guardians."
+      name: "Special Weapons Store",
+      "button text": ["Go back to town", "go back to the main dungeon", ""],
+      "button functions": [goTown, goFloor, null],
+      text: "Come back later for more!"
+   },
+   {
+      // 12
+      name: "Map 2",
+      "button text": [],
+      "button functions": [],
+      text: ""
+      // pin; patch 1.3 content
    }
 ];
 const innerLocations = [
@@ -582,14 +557,6 @@ const innerLocations = [
       text: [`Alternate`, "Defend", "Imbue your weapon with poison", "Imbue your weapon with fire", "Imbue your weapon with ice", "imbue your weapon with lightning"],
       functions: [switchWeapon, defend, addPoison, addFire, addIce, addLightning],
       background: "#ef8011"
-   },
-   {
-      // 3
-      name: "inner manor"
-      text: [],
-      functions: [],
-      background: ""
-      // pin; finish this
    }
 ];
 
@@ -770,6 +737,9 @@ function closeItems() {
 
 function goTown() {
    fightingBoss = false;
+   if (map == 1) {
+
+   }
    update(locations[0]);
    floor = 0;
    if (tutorial2)
@@ -825,11 +795,7 @@ function goFloor() {
    update(locations[2]);
    if (floor == 2) {
       text.innerText = "You've reached the second floor. The atmosphere is hot, The stones making up this floor are toasty and scald your boots. The monsters here are much more powerful!";
-   }else if (floor == 3) {
-      text.innerText = "Ever deeper into the dark, the air grows hotter still. The monsters grow more aggressive, the ecosystem has been disrupted and the dungeon does not take kindly to that fact.";
-   } else if (floor == 4) {
-      text.innerText = "The dungeon's master is clearly aware of your presence. Be wary, for the air burns all life within these walls. The only light within this hellhole being the heat from a lava lake.";
-   } else if (floor == 5){
+   } else if (floor == 3){
       update(locations[10]);
    } else if (!finalBoss && fightingBoss)
    {
@@ -842,13 +808,17 @@ function nextArea() {
    // pin; New areas
 }
 
+function specialStore() {
+   update(locations[11]);
+}
+
 let items = [
    {
       // XP INCREASE 0
       name: "Sapphire ring",
       count: 0,
       text: "A small sapphire encased in a gold ring, I wonder who was getting married...",
-      effect: "Increases XP gained by 10% per stack"
+      effect: "Increases XP gained by 20% per stack"
    },
    {
       // GOLD MULTIPLIER 1
@@ -975,7 +945,7 @@ function chanceItem() {
 }
 
 function updateItems() {
-   xpBonus = 1 + .1 * items[0].count;
+   xpBonus = 1 + .2 * items[0].count;
    goldBonus = 1 + .2 * items[1].count;
    defBonus = 5 * items[2].count;
    leech = 10 * items[3].count;
@@ -1250,29 +1220,26 @@ function speedBuff() {
 function monsterSearch() {
    let mons = Math.floor(Math.random() * 100);
    if (mons <= 50) {
-      // Easy
       if (floor == 1) {
          fighting = 0;
       } else if (floor == 2) {
          fighting = 4;
-      } else if (floor == 3) {
+      } else {
          fighting = 8;
       }
    }
    else if (mons <= 80) {
-      // Medium
       if (floor == 1) {
          fighting = 1;
       } else if (floor == 2) {
          fighting = 5;
-      } else if (floor == 3) { fighting = 9; }
+      } else { fighting = 9; }
    } else {
-      // Hard
       if (floor == 1) {
          fighting = 2;
       } else if (floor == 2) {
          fighting = 6;
-      } else if (floor == 3) { fighting = 10; }
+      } else { fighting = 10; }
    }
    if (tutorial) { fighting = 0; }
    goFight();
@@ -1287,17 +1254,24 @@ function goDeeper() {
       fightingBoss = true;
       fighting = 7;
       goFight();
-   } else if (bossThree && floor == 3) {
+   } else if (finalBoss && floor == 3) {
       fightingBoss = true;
       fighting = 11;
       goFight();
-   } else if (bossFour && floor == 4) {
-      fightingBoss = true;
-      fighting = 15;
-      goFight();
-   } else {
+   } else if(!finalBoss && floor == 3) {
+      text.innerText = "The lord is vanquished, there is nothing left for you here";
+      button1.innerText = "return to town";
+      button2.innerText = "Return to the slaughter (floor 3)";
+      button1.onclick = goTown();
+      button2.onclick = goFloor();
+      button3.style.display = "none";
+   } else if (floor == 1) {
       floor++;
-      goFloor();
+      text.innerText = "You've reached the second floor. The atmosphere is hot, The stones making up this floor are toasty and scald your boots. The monsters here are much more powerful!";
+   }
+   else {
+      floor++;
+      update(locations[10]);
    }
 }
 
@@ -1438,7 +1412,7 @@ function playerAttack() {
             if (ice) {
                attDmg = Math.floor(((attDmg * Math.pow(1.2, weapons[currentWeapon].upgrade)) + 1) * 1.2 * elementalDmgBuff * iceItemBuff);
                if (quick) {
-                  frost = Math.floor(attDmg*1.2) * iceItemBuff / 3;
+                  frost = Math.floor((attDmg*1.2) * iceItemBuff / 3);
                } else {
                   frost = Math.floor((attDmg*1.2) * iceItemBuff * 1.5);
                }
@@ -1457,7 +1431,7 @@ function playerAttack() {
                if (quick) {
                   poisonDmg += Math.floor((attDmg/7+1) * Math.pow(1.2, weapons[currentWeapon].upgrade) * poisonItemBuff * 1.5);
                } else {
-                  poisonDmg += Math.floor((attDmg/7+1) * Math.pow(1.2, weapons[currentWeapon].upgrade) * poisonItemBuff / 3);
+                  poisonDmg += Math.floor((attDmg/7+1) * Math.pow(1.2, weapons[currentWeapon].upgrade) * poisonItemBuff / 2);
                }
                poisoned = true;
             }
@@ -1502,7 +1476,6 @@ function monsterAttack() {
       poisonDmg = Math.floor(poisonDmg * poisonDecay);
       }
       monsterHealthText.innerText = monsterHealth;
-      // pin; fire DOT on floor 4 and maybe smth on floor 5
    if (health <= 0)
       {
          lose();
@@ -1529,7 +1502,7 @@ function getMonsterAttackValue(level) {
       monDmg = Math.floor(monDmg/1.7);
       text.innerText += ` it's frosted, reducing it's damage;`;
    }
-   frost /= 1.2;
+   frost /= 1.1;
    if (Math.random() > .9)
    {
       monDmg *= 2;
@@ -1542,7 +1515,7 @@ function getMonsterAttackValue(level) {
 }
 
 function isMonsterHit() {
-   return Math.random() < .85 || health <= (maxHealth / 4);
+   return Math.random() < .75 || health >= (maxHealth / 4);
 }
 
 function isPlayerHit() {
@@ -1557,11 +1530,8 @@ function defeatMonster() {
    poisonDmg = 0;
    focusMenu.style.display = "none";
    button4.style.display = "inline";
-   if (fighting == 5) {
-      xp += 100 * xpBonus;
-      gold += 1000 * goldBonus;
-   } else { gold += Math.floor(monsters[fighting].level * 6 * (.9+(Math.random()/5)) * goldBonus); }
-   if (monsters[fighting].level > 1 && fighting != 5) {
+   gold += Math.floor(Math.pow(monsters[fighting].level, 1.4) * 8 * goldBonus);
+   if (monsters[fighting].level > 1) {
       xp += Math.floor((Math.pow(monsters[fighting].level, 1.2) + 1) * xpBonus);
    } else if (fightingBoss) {
       xp += Math.floor((Math.pow(monsters[fighting].level, 1.2) + 1) * 2 * xpBonus);
